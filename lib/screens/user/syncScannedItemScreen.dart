@@ -285,10 +285,9 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
     } else {
       await _getCountedItems();
       await _getCountedNfItems();
-
       //NF ITEMS//
       if (_nfitems.length > 0) {
-        var res = await syncNfItem(_nfitems);
+        var res = await syncNfItem(_nfitems,bytesUser,bytesAudit);
         await _sqfliteDBHelper.updateItemNotFoundByLocation(
             GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
         if (res == true) {
@@ -362,9 +361,8 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
     _items = await _sqfliteDBHelper.selectItemCountRawQuery(
         "SELECT itemcode,barcode,description,uom, qty, business_unit, department, section, rack_desc, datetimecreated, datetimesaved, expiry, location_id, conqty FROM ${ItemCount.tblItemCount} WHERE location_id = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
   }
-
   _getCountedNfItems() async {
     _nfitems = await _sqfliteDBHelper.selectItemNotFoundRawQuery(
-        "SELECT barcode,uom, qty,location, datetimecreated FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
+        "SELECT barcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
   }
 }

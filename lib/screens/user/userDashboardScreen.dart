@@ -14,7 +14,6 @@ class UserDashboardScreen extends StatefulWidget {
   @override
   _UserDashboardScreenState createState() => _UserDashboardScreenState();
 }
-
 class _UserDashboardScreenState extends State<UserDashboardScreen> {
   late SqfliteDBHelper _sqfliteDBHelper;
   Logs _log = Logs();
@@ -195,7 +194,6 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
       ),
     );
   }
-
   Widget menuList(IconData icon, String title, VoidCallback voidCallback) {
     return GestureDetector(
       child: Padding(

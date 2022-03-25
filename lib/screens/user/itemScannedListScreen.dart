@@ -346,7 +346,6 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                           () async {
                                                             Navigator.pop(
                                                                 context);
-
                                                             await updateItemModal(
                                                               context,
                                                               _sqfliteDBHelper,

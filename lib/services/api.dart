@@ -119,12 +119,14 @@ Future syncItem(
   return convertedDataToJson;
 }
 
-Future syncNfItem(List nfItems) async {
-  var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFItemList");
+Future syncNfItem(List nfItems, String userSignature, String auditSignature) async {
+  var url = Uri.parse(ServerUrl.urlCI + "mapi/""insertNFItemList");
   final response = await retry(() => http.post(url, headers: {
         "Accept": "Application/json"
       }, body: {
         'nfitems': json.encode(nfItems),
+        'user_signature': userSignature,
+        'audit_signature': auditSignature,
       }));
   var convertedDataToJson = jsonDecode(response.body);
   return convertedDataToJson;

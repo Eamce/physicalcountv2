@@ -218,7 +218,6 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             DateFormat dateFormat1 =
                                 DateFormat("yyyy-MM-dd hh:mm:ss aaa");
                             String dt = dateFormat1.format(DateTime.now());
-
                             _itemNotFound.barcode =
                                 barcodeController.text.trim();
                             _itemNotFound.uom = _selectedUom.trim();
@@ -227,8 +226,13 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                                 GlobalVariables.currentLocationID;
                             _itemNotFound.exported = 'false';
                             _itemNotFound.dateTimeCreated = dt;
+                            //ADDED ATTRIBUTES TO NOT FOUND TABLE
+                            _itemNotFound.businessUnit=GlobalVariables.currentBusinessUnit;
+                            _itemNotFound.department=GlobalVariables.currentDepartment;
+                            _itemNotFound.section=GlobalVariables.currentSection;
+                            _itemNotFound.empno=GlobalVariables.logEmpNo;
+                            _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
                             await db.insertItemNotFound(_itemNotFound);
-
                             myFocusNodeBarcode.requestFocus();
                             barcodeController.clear();
                             qtyController.clear();

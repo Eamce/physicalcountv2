@@ -478,7 +478,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       filter = await getFilteredItemMasterfile();
       print('FILTER :  $filter');
       await _sqfliteDBHelper.insertFilterBatch(filter, 0, filter.length);
-
       //unit
       print(filter);
       await _sqfliteDBHelper.deleteUnitAll();

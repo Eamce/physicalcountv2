@@ -128,7 +128,12 @@ class SqfliteDBHelper {
         ${ItemNotFound.colQty} TEXT NOT NULL,
         ${ItemNotFound.colLocation} TEXT NOT NULL,
         ${ItemNotFound.colExported} TEXT NOT NULL,
-        ${ItemNotFound.colDTCreated} TEXT NOT NULL
+        ${ItemNotFound.colDTCreated} TEXT NOT NULL,
+        ${ItemNotFound.colBu} TEXT NOT NULL,
+        ${ItemNotFound.coldept} TEXT NOT NULL,
+        ${ItemNotFound.colsection} TEXT NOT NULL,
+        ${ItemNotFound.colempno} TEXT NOT NULL,
+        ${ItemNotFound.colrack} TEXT NOT NULL
       )
     ''');
 //--ITEM NOT FOUND--//
