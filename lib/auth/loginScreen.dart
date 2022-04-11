@@ -256,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
         );
       } else {
-        var rs = await _sqfliteDBHelper.fetchUsersWhere("id != 0");
+       // var rs = await _sqfliteDBHelper.fetchUsersWhere("id != 0");
         print(ls);
         if (ls.isNotEmpty) {
           String locationId=ls[0]['location_id'];
