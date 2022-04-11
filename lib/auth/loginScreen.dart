@@ -37,8 +37,12 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-    emppinController.text="480080767534";
-    empnoController.text="01000042637";
+     emppinController.text="480080767534";
+     empnoController.text="01000042637";
+    // emppinController.text="105313324137";
+    // empnoController.text="01000042072";
+
+   // btnEnabled=true;
     myFocusNodeEmpNo = FocusNode();
     myFocusNodeEmpPin = FocusNode();
     myFocusNodeEmpNo.requestFocus();
@@ -145,7 +149,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: Colors.black,
                       style: TextStyle(color: Colors.black, fontSize: 25),
                       controller: emppinController,
-
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
@@ -201,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 : btnEnabled = false;
                           });
                       },
-                      onSubmitted: (value) => onPressLogin(),
+                     onSubmitted: (value) => onPressLogin(),
                     ),
                   ),
                   Padding(
@@ -218,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         "Log In",
                         style: TextStyle(
                            color: btnEnabled ? Colors.white : Colors.grey[400],
-
                             fontSize: 25),
                       ),
                       color: btnEnabled ? Colors.blue : Colors.grey[300],
@@ -235,8 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
   onPressLogin() async {
+    var ls = await _sqfliteDBHelper.selectUserWhere(empnoController.text.trim(), emppinController.text.trim());
     if (btnEnabled) {
       if (empnoController.text.trim() == "1001" &&
           emppinController.text.trim() == "1001") {
@@ -249,47 +251,38 @@ class _LoginScreenState extends State<LoginScreen> {
         _log.empid = "ADMIN";
         _log.details = "[LOGIN][Admin Login]";
         await _sqfliteDBHelper.insertLog(_log);
-
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
         );
       } else {
-        var ls = await _sqfliteDBHelper.selectUserWhere(
-            empnoController.text.trim(), emppinController.text.trim());
         var rs = await _sqfliteDBHelper.fetchUsersWhere("id != 0");
-        print(rs);
-        if (ls.length > 0) {
-          var filter = await _sqfliteDBHelper.selectFilterWhere();
+        print(ls);
+        if (ls.isNotEmpty) {
+          String locationId=ls[0]['location_id'];
+          var filter = await _sqfliteDBHelper.selectFilterWhere(locationId);
           print(filter);
-          GlobalVariables.byCategory =
-              filter[0]['byCategory'] == 'True' ? true : false;
+          GlobalVariables.byCategory = filter[0]['byCategory'] == 'True' ? true : false;
           GlobalVariables.categories = filter[0]['categoryName'];
-          GlobalVariables.byVendor =
-              filter[0]['byVendor'] == 'True' ? true : false;
+          GlobalVariables.byVendor = filter[0]['byVendor'] == 'True' ? true : false;
           GlobalVariables.vendors = filter[0]['vendorName'];
           GlobalVariables.countType = filter[0]['ctype'];
           GlobalVariables.enableExpiry = false;
-
-          GlobalVariables.prevBarCode = "FUnknown";
+          GlobalVariables.prevBarCode = "Unknown";
           GlobalVariables.prevItemCode = "Unknown";
           GlobalVariables.prevItemDesc = "Unknown";
           GlobalVariables.prevItemUOM = "Unknown";
           GlobalVariables.prevQty = "Unknown";
           GlobalVariables.prevDTCreated = "Unknown";
-
           GlobalVariables.logEmpNo = empnoController.text.trim();
           GlobalVariables.logFullName = ls[0]['name'];
-
           _log.date = dateFormat.format(DateTime.now());
           _log.time = timeFormat.format(DateTime.now());
-          _log.device =
-              "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+          _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
           _log.user = "USER";
           _log.empid = GlobalVariables.logEmpNo;
           _log.details = "[LOGIN][User Login]";
           await _sqfliteDBHelper.insertLog(_log);
-
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => UserDashboardScreen()),

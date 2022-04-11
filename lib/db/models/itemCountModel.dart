@@ -56,43 +56,43 @@ class ItemCount {
       this.locationid});
 
   ItemCount.fromMap(Map<String, dynamic> map) {
-    id = map[colId];
-    barcode = map[colBarcode];
-    itemcode = map[colItemcode];
-    description = map[colDescription];
-    uom = map[colUOM];
-    qty = map[colQty];
-    conqty = map[colConQty];
-    location = map[colLocation];
-    bu = map[colBU];
-    area = map[colArea];
-    rackno = map[colRackNo];
+    id              = map[colId];
+    barcode         = map[colBarcode];
+    itemcode        = map[colItemcode];
+    description     = map[colDescription];
+    uom             = map[colUOM];
+    qty             = map[colQty];
+    conqty          = map[colConQty];
+    location        = map[colLocation];
+    bu              = map[colBU];
+    area            = map[colArea];
+    rackno          = map[colRackNo];
     dateTimeCreated = map[colDTCreated];
-    dateTimeSaved = map[colDTSaved];
-    empNo = map[colEmpNo];
-    exported = map[colExported];
-    expiry = map[colExpiry];
-    locationid = map[colLocationId];
+    dateTimeSaved   = map[colDTSaved];
+    empNo           = map[colEmpNo];
+    exported        = map[colExported];
+    expiry          = map[colExpiry];
+    locationid      = map[colLocationId];
   }
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
-      colBarcode: barcode,
-      colItemcode: itemcode,
-      colDescription: description,
-      colUOM: uom,
-      colQty: qty,
-      colConQty: conqty,
-      colLocation: location,
-      colBU: bu,
-      colArea: area,
-      colRackNo: rackno,
-      colDTCreated: dateTimeCreated,
-      colDTSaved: dateTimeSaved,
-      colEmpNo: empNo,
-      colExported: exported,
-      colExpiry: expiry,
-      colLocationId: locationid
+      colBarcode      : barcode,
+      colItemcode     : itemcode,
+      colDescription  : description,
+      colUOM          : uom,
+      colQty          : qty,
+      colConQty       : conqty,
+      colLocation     : location,
+      colBU           : bu,
+      colArea         : area,
+      colRackNo       : rackno,
+      colDTCreated    : dateTimeCreated,
+      colDTSaved      : dateTimeSaved,
+      colEmpNo        : empNo,
+      colExported     : exported,
+      colExpiry       : expiry,
+      colLocationId   : locationid
     };
     map[colId] = id;
     return map;

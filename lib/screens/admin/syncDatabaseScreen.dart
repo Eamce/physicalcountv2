@@ -394,7 +394,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       locationMasterfileData = await getLocationMasterfile();
       await _sqfliteDBHelper.insertLocationBatch(
           locationMasterfileData, 0, locationMasterfileData.length);
-
       locationMasterfileCount =
           locationMasterfileCount + locationMasterfileData.length;
       if (mounted) setState(() {});

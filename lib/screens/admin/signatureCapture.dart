@@ -16,10 +16,8 @@ class SignatureCapture extends StatefulWidget {
 class _SignatureCaptureState extends State<SignatureCapture> {
   final GlobalKey<SfSignaturePadState> signatureUserGlobalKey = GlobalKey();
   final GlobalKey<SfSignaturePadState> signatureAuditGlobalKey = GlobalKey();
-
   List _locations = [];
   bool _doneGetUsers = false;
-
   String _selectedUser = "";
   String _selectedAudit = "";
   int _selectedIndex = -1;
@@ -302,6 +300,7 @@ class _SignatureCaptureState extends State<SignatureCapture> {
         ),
         Text("Signature successfully uploaded."));
     _done = true;
+    Navigator.pop(context);
     if (mounted) setState(() {});
   }
 }

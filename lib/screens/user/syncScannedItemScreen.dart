@@ -302,7 +302,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
           await _sqfliteDBHelper.insertLog(_log);
         }
       }
-
       //COUNT
       if (_items.length > 0) {
         var res = await syncItem(_items, bytesUser, bytesAudit);
@@ -318,9 +317,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
           _log.details =
               "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
           await _sqfliteDBHelper.insertLog(_log);
-
           checkingNetwork = false;
-          if (mounted) setState(() {});
+          if (mounted) setState(() {
+            Navigator.pop(context);
+          });
           instantMsgModal(
               context,
               Icon(
@@ -329,10 +329,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                 size: 40,
               ),
               Text("Data successfully synced."));
+
         } else {
           checkingNetwork = false;
           if (mounted) setState(() {});
-
           instantMsgModal(
               context,
               Icon(
@@ -340,11 +340,14 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                 color: Colors.red,
                 size: 40,
               ),
-              Text("Something went wrong."));
+              Text("Something went wrong.")
+          );
         }
       } else {
         checkingNetwork = false;
-        if (mounted) setState(() {});
+        if (mounted) setState(() {
+          Navigator.pop(context);
+        });
         instantMsgModal(
             context,
             Icon(
@@ -356,7 +359,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
       }
     }
   }
-
   _getCountedItems() async {
     _items = await _sqfliteDBHelper.selectItemCountRawQuery(
         "SELECT itemcode,barcode,description,uom, qty, business_unit, department, section, rack_desc, datetimecreated, datetimesaved, expiry, location_id, conqty FROM ${ItemCount.tblItemCount} WHERE location_id = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");

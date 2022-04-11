@@ -195,26 +195,18 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     'EXPORTED') {
                                                   customLogicalModal(
                                                     context,
-                                                    Text(
-                                                        "Are you sure you want to edit this item?"),
-                                                    () =>
-                                                        Navigator.pop(context),
+                                                    Text("Are you sure you want to edit this item?"),
+                                                    () => Navigator.pop(context),
                                                     () async {
                                                       Navigator.pop(context);
-
                                                       await updateNotFoundItemModal(
                                                         context,
                                                         _sqfliteDBHelper,
                                                         "[LOGIN][Audit scan ID to update scanned item quantity.]",
-                                                        itemNotFound[index]
-                                                            .id!
-                                                            .toString(),
-                                                        itemNotFound[index]
-                                                            .barcode!,
-                                                        itemNotFound[index]
-                                                            .uom!,
-                                                        itemNotFound[index]
-                                                            .qty!,
+                                                        itemNotFound[index].id!.toString(),
+                                                        itemNotFound[index].barcode!,
+                                                        itemNotFound[index].uom!,
+                                                        itemNotFound[index].qty!,
                                                         units,
                                                       );
                                                       _refreshItemList();
@@ -240,7 +232,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                 right: 8.0),
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                  primary: Colors.red),
+                                                 primary: Colors.red),
                                               child: Row(
                                                 children: [
                                                   Icon(CupertinoIcons.trash),
@@ -288,8 +280,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                         color: Colors.red,
                                                         size: 40,
                                                       ),
-                                                      Text(
-                                                          "This item is already synced, you cannot remove synced item."));
+                                                      Text("This item is already synced, you cannot remove synced item."));
                                                 }
                                               },
                                             ),
@@ -300,12 +291,8 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                         children: [
                                           Spacer(),
                                           Icon(
-                                            itemNotFound[index].exported ==
-                                                    'EXPORTED'
-                                                ? CupertinoIcons
-                                                    .checkmark_alt_circle_fill
-                                                : CupertinoIcons
-                                                    .info_circle_fill,
+                                            itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill
+                                                : CupertinoIcons.info_circle_fill,
                                             color:
                                                 itemNotFound[index].exported ==
                                                         'EXPORTED'
@@ -318,7 +305,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                   ? "Synced to Server Database"
                                                   : "Not synced to Server Database",
                                               style: TextStyle(
-                                                  fontSize: 15,
+                                                   fontSize: 15,
                                                   color: Colors.black))
                                         ],
                                       ),
@@ -353,7 +340,6 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
       ),
     );
   }
-
   Widget loading() {
     return Expanded(
       child: Column(
@@ -385,7 +371,6 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   delete(int id, int index) async {
     await _sqfliteDBHelper.deleteItemNotFound(id);
     _refreshItemList();
-
     //logs
     _log.date = dateFormat.format(DateTime.now());
     _log.time = timeFormat.format(DateTime.now());

@@ -411,9 +411,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               : _itemCount.expiry = "0000-00-00";
                           _itemCount.locationid =
                               GlobalVariables.currentLocationID;
-
                           await _sqfliteDBHelper.insertItemCount(_itemCount);
-
                           _log.date = dateFormat.format(DateTime.now());
                           _log.time = timeFormat.format(DateTime.now());
                           _log.device =
@@ -542,14 +540,12 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       ),
     );
   }
-
   _refreshItemList() async {
     List<ItemCount> x = await _sqfliteDBHelper.fetchItemCountWhere(
         "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}'");
     _items = x;
     if (mounted) setState(() {});
   }
-
   searchItem(String value) async {
     print(GlobalVariables.byCategory);
     print(GlobalVariables.byVendor);
@@ -662,7 +658,6 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       }
     }
 //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
-
 //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
     if (GlobalVariables.byCategory == false &&
         GlobalVariables.byVendor == true) {

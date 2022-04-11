@@ -8,6 +8,8 @@ import 'package:physicalcountv2/values/bodySize.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
+import 'instantMsgModal.dart';
+
 saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
   late FocusNode myFocusNodeBarcode;
   late FocusNode myFocusNodeQty;
@@ -21,7 +23,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
   bool btnSaveEnabled = false;
 
   ItemNotFound _itemNotFound = ItemNotFound();
-
+  List itemNotFound;
   // var _uom = ["MALE", "FEMALE"];
   var _uom = units;
   var _uomm = [];
@@ -73,10 +75,25 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(3)),
                       ),
-                      onFieldSubmitted: (value) {
-                        myFocusNodeQty.requestFocus();
+                      onFieldSubmitted: (value) async {
+                      //  myFocusNodeQty.requestFocus();
+                        var res=await db.validateBarcode(value);
+                        itemNotFound=res;
+                        if(itemNotFound.isNotEmpty){
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("Item is in the masterfile"));
+                          barcodeController.clear();
+                          btnSaveEnabled = false;
+                        }
                       },
-                      onChanged: (value) {
+                      //SCAN NOT FOUND BARCODE
+                      onChanged: (value) async {
                         if (barcodeController.text.isNotEmpty &&
                             qtyController.text.isNotEmpty) {
                           btnSaveEnabled = true;
@@ -236,10 +253,8 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             myFocusNodeBarcode.requestFocus();
                             barcodeController.clear();
                             qtyController.clear();
-
                             btnSaveEnabled = false;
                             setModalState(() {});
-
                             var rs = await db.selectItemNotFoundWhere(
                                 GlobalVariables.currentLocationID);
                             print(rs);

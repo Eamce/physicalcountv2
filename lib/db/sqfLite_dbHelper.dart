@@ -146,7 +146,8 @@ class SqfliteDBHelper {
         ${Filter.colcategoryName} TEXT NOT NULL,
         ${Filter.colbyVendor} TEXT NOT NULL,
         ${Filter.colvendorName} TEXT NOT NULL,
-        ${Filter.coltype} TEXT NOT NULL
+        ${Filter.coltype} TEXT NOT NULL,
+        ${Filter.collocation} TEXT NOT NULL
       )
     ''');
 //--FILTERS TABLE--//
@@ -214,18 +215,17 @@ class SqfliteDBHelper {
     });
   }
 
-  Future selectUserWhere(String empno, String emppin) async {
+  Future<List> selectUserWhere(String empno, String emppin) async {
     var db = await database;
     List x = await db.rawQuery(
         "SELECT * FROM ${User.tblUser} WHERE emp_no='$empno' AND emp_pin='$emppin'");
-
     if (x.length > 0) {
       return db.rawQuery(
-          "SELECT * FROM ${User.tblUser} WHERE emp_no='$empno' AND emp_pin='$emppin'");
+          "SELECT * FROM ${User.tblUser} WHERE emp_no ='$empno' AND emp_pin='$emppin'",null);
     } else {
       var user = int.parse(empno) * 1;
       return db.rawQuery(
-          "SELECT * FROM ${User.tblUser} WHERE emp_no LIKE '%$user%' AND emp_pin='$emppin'");
+          "SELECT * FROM ${User.tblUser} WHERE emp_no = '$user' AND emp_pin='$emppin'",null);
     }
   }
 
@@ -252,7 +252,6 @@ class SqfliteDBHelper {
 
   Future selectU(String empno) async {
     var db = await database;
-
     List x = await db
         .rawQuery("SELECT * FROM ${User.tblUser} WHERE emp_no = '$empno'");
     if (x.length > 0) {
@@ -305,7 +304,7 @@ class SqfliteDBHelper {
     } else {
       var user = int.parse(id) * 1;
       return db.rawQuery(
-          "SELECT * FROM ${Audit.tblAudit} WHERE emp_no LIKE '%$user%' AND location_id='$locationid'");
+          "SELECT * FROM ${Audit.tblAudit} WHERE emp_no = '$user' AND location_id='$locationid'");
     }
   }
 
@@ -357,6 +356,11 @@ class SqfliteDBHelper {
      return client.rawQuery("SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' ", null);
   }
 
+  Future validateBarcode(barcode)async{
+    var client = await database;
+    return client.rawQuery("SELECT * FROM items WHERE barcode LIKE '%$barcode%' ",null);
+  }
+
   Future insertItemBatch(items, int start, int end) async {
     Database db = await database;
     await db.transaction((txn1) async {
@@ -402,14 +406,13 @@ class SqfliteDBHelper {
     });
   }
 
-  Future selectFilterWhere() async {
+  Future selectFilterWhere(String locationId) async {
     var db = await database;
-    return db.rawQuery("SELECT * FROM ${Filter.tblFilter}");
+    return db.rawQuery("SELECT * FROM ${Filter.tblFilter} WHERE location_id ='$locationId'");
   }
 
   Future selectItemWhere(String barcode) async {
     var db = await database;
-    print('ASDSDSDSDSDS');
     return db.rawQuery("SELECT * FROM ${Item.tblItem} WHERE barcode='$barcode'");
   }
 //-----------------FILTERS-----------------//

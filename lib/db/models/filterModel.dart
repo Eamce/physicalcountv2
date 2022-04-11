@@ -6,6 +6,7 @@ class Filter {
   static const colbyVendor = "byVendor";
   static const colvendorName = "vendorName";
   static const coltype = 'ctype';
+  static const collocation = 'location_id';
 
   late final int? id;
   late String? bycategory;
@@ -13,6 +14,7 @@ class Filter {
   late String? byvendor;
   late String? vendorname;
   late String? type;
+  late String? location_id;
 
   Filter({
     this.id,
@@ -21,6 +23,7 @@ class Filter {
     this.byvendor,
     this.vendorname,
     this.type,
+    this.location_id,
   });
 
   Filter.fromMap(Map<String, dynamic> map) {
@@ -30,6 +33,7 @@ class Filter {
     byvendor = map[colbyVendor];
     vendorname = map[colvendorName];
     type = map[coltype];
+    location_id = map[collocation];
   }
 
   Map<String, dynamic> toMap() {
@@ -38,7 +42,8 @@ class Filter {
       colcategoryName: categoryname,
       colbyVendor: byvendor,
       colvendorName: vendorname,
-      coltype: type
+      coltype: type,
+      collocation:location_id
     };
     map[colId] = id;
     return map;
