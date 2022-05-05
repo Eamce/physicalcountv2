@@ -165,14 +165,14 @@ updateNotFoundItemModal(
                               borderRadius: BorderRadius.circular(3)),
                         ),
                         onFieldSubmitted: (value) {
-                          //
+                          qtyController.clear();
                         },
                         onChanged: (value) {
-                          // if (qtyController.text.isNotEmpty) {
-                          //   setModalState(() {});
-                          // } else {
-                          //   setModalState(() {});
-                          // }
+                          if (qtyController.text.isNotEmpty) {
+                            setModalState(() {});
+                          } else {
+                            setModalState(() {});
+                          }
                         },
                       ),
                     ),

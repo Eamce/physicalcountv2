@@ -17,22 +17,17 @@ class ViewItemNotFoundScanScreen extends StatefulWidget {
 class _ViewItemNotFoundScanScreenState
     extends State<ViewItemNotFoundScanScreen> {
   late SqfliteDBHelper _sqfliteDBHelper;
-
   List units = [];
   List<ItemNotFound> itemNotFound = [];
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
-
   bool _loading = true;
-
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
     getUnits();
-
     super.initState();
   }
 
@@ -165,15 +160,8 @@ class _ViewItemNotFoundScanScreenState
                                         children: [
                                           Spacer(),
                                           Icon(
-                                            itemNotFound[index].exported ==
-                                                    'EXPORTED'
-                                                ? CupertinoIcons
-                                                    .checkmark_alt_circle_fill
-                                                : CupertinoIcons
-                                                    .info_circle_fill,
-                                            color:
-                                                itemNotFound[index].exported ==
-                                                        'EXPORTED'
+                                            itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill : CupertinoIcons.info_circle_fill,
+                                            color: itemNotFound[index].exported == 'EXPORTED'
                                                     ? Colors.green
                                                     : Colors.red,
                                           ),

@@ -10,7 +10,7 @@ import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
 import 'instantMsgModal.dart';
 
-saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
+saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
   late FocusNode myFocusNodeBarcode;
   late FocusNode myFocusNodeQty;
 
@@ -52,7 +52,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
     _itemNotFound.section=GlobalVariables.currentSection;
     _itemNotFound.empno=GlobalVariables.logEmpNo;
     _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
-    _itemNotFound.tagging='item code';
+    _itemNotFound.tagging='barcode';
     await db.insertItemNotFound(_itemNotFound);
     myFocusNodeBarcode.requestFocus();
     barcodeController.clear();
@@ -108,7 +108,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                     //     setModalState(() {});
                     //   },
                     // ),
-                    child: Text("Item Code",
+                    child: Text("Barcode",
                         style: TextStyle(
                             fontSize: 25,
                             color: Colors.blue,
@@ -131,7 +131,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             borderRadius: BorderRadius.circular(3)),
                       ),
                       onFieldSubmitted: (value) async {
-                      //  myFocusNodeQty.requestFocus();
+                        //  myFocusNodeQty.requestFocus();
                         var res=await db.validateBarcode(value);
                         itemNotFound=res;
                         if(itemNotFound.isNotEmpty){
@@ -176,7 +176,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                       showSearchBox: true,
                       selectedItem: _selectedUom,
                       dropdownSearchDecoration: InputDecoration(
-                       // menuMaxHeight: constraints.maxHeight,
+                        // menuMaxHeight: constraints.maxHeight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5.0),
                         ),
@@ -253,7 +253,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
                           contentPadding:
-                              EdgeInsets.all(8.0), //here your padding
+                          EdgeInsets.all(8.0), //here your padding
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(3)),
                         ),
@@ -303,7 +303,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             //   setModalState(() {});
                             // }
                             DateFormat dateFormat1 =
-                                DateFormat("yyyy-MM-dd hh:mm:ss aaa");
+                            DateFormat("yyyy-MM-dd hh:mm:ss aaa");
                             String dt = dateFormat1.format(DateTime.now());
                             _itemNotFound.barcode =
                                 barcodeController.text.trim();

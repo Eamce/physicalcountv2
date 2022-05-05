@@ -13,41 +13,38 @@ import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/widget/itemNofFoundModal.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
+import '../../db/models/itemNotFoundModel.dart';
+import '../../widget/saveNotFoundBarcode.dart';
+import '../../widget/saveNotFoundItemModal.dart';
+
 class ItemScanningScreen extends StatefulWidget {
   const ItemScanningScreen({Key? key}) : super(key: key);
-
   @override
   _ItemScanningScreenState createState() => _ItemScanningScreenState();
 }
-
 class _ItemScanningScreenState extends State<ItemScanningScreen> {
   late FocusNode myFocusNodeBarcode;
   late FocusNode myFocusNodeQty;
-
   final barcodeController = TextEditingController();
   final qtyController = TextEditingController();
   final auditIDController = TextEditingController();
-
+  List units = [];
+  List<ItemNotFound> itemNotFound = [];
   bool btnSaveEnabled = false;
-
   String itemCode = "";
   String itemDescription = "";
   String itemUOM = "";
   int convQty = 0;
-
   String dtItemScanned = "";
-
   ItemCount _itemCount = ItemCount();
-
   late SqfliteDBHelper _sqfliteDBHelper;
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   // DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
   DateFormat timeFormat = DateFormat("HH:mm:ss");
-
   List<ItemCount> _items = [];
-
   DateTime selectedDate = DateTime.now();
+  bool _loading = true;
   // DateTime selectedDate =
   //     DateTime.parse("0000-00-00"); //-0001-11-30 00:00:00.000
   Future<void> _selectDate(BuildContext context) async {
@@ -66,17 +63,15 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
+    getUnits();
     if (mounted) setState(() {});
-
     btnSaveEnabled = false;
     itemCode = "Unknown";
     itemDescription = "Unknown";
     itemUOM = "Unknown";
     if (mounted) setState(() {});
-
     myFocusNodeBarcode = FocusNode();
     myFocusNodeQty = FocusNode();
-
     super.initState();
   }
 
@@ -96,8 +91,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
               if (_items.length > 0) {
                 customLogicalModal(
                     context,
-                    Text(
-                        "Are you finished scanning this area? Click YES to tag this area FINISHED. Setting this area to FINISHED will auto lock the area. Continue?"),
+                    Text("Are you finished scanning this area? Click YES to tag this area FINISHED. Setting this area to FINISHED will auto lock the area. Continue?"),
                     () => Navigator.pop(context), () async {
                   var dtls =
                       "[FINISHED][Audit tag rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc}) to FINISHED]";
@@ -330,14 +324,39 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               borderRadius: BorderRadius.circular(3)),
                         ),
                         onChanged: (value) {
+                          if(value.contains('.') || value.characters.first=='0'){
+                            qtyController.clear();
+                            btnSaveEnabled = false;
+                            if (mounted) setState(() {});
+                          }
                           if (barcodeController.text.isNotEmpty &&
                               qtyController.text.isNotEmpty) {
-                            btnSaveEnabled = true;
+                            if(qtyController.text.length<7){
+                              btnSaveEnabled = true;
+                              if (mounted) setState(() {});
+                            }else{
+                              instantMsgModal(
+                                  context,
+                                  Icon(
+                                    CupertinoIcons.exclamationmark_circle,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                  Text("Quantity is substantial. Please input below 7 digits amount."));
+                              btnSaveEnabled = false;
+                              if (mounted) setState(() {});
+                            }
                             if (mounted) setState(() {});
                           } else {
                             btnSaveEnabled = false;
                             if (mounted) setState(() {});
                           }
+                        },
+                        onFieldSubmitted: (value){
+                           qtyController.clear();
+                           btnSaveEnabled=false;
+                           if(mounted) setState(() {
+                           });
                         },
                       ),
                     ),
@@ -376,6 +395,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                   child: Text("SAVE",
                       style: TextStyle(color: Colors.white, fontSize: 25)),
                   onPressed: () async {
+                    int quantity = int.parse(qtyController.text);
                     if (btnSaveEnabled == true) {
                       if (selectedDate.toString() !=
                           "-0001-11-30 00:00:00.000") {
@@ -383,7 +403,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                         GlobalVariables.isAuditLogged = false;
                         await scanAuditModal(context, _sqfliteDBHelper, dtls);
                         if (GlobalVariables.isAuditLogged == true) {
-                          // DateFormat dateFormat1 =
+                          //     DateFormat dateFormat1 =
                           //     DateFormat("yyyy-MM-dd hh:mm:ss aaa");
                           DateFormat dateFormat1 =
                               DateFormat("yyyy-MM-dd HH:mm:ss");
@@ -427,8 +447,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                           GlobalVariables.prevItemCode = itemCode;
                           GlobalVariables.prevItemDesc = itemDescription;
                           GlobalVariables.prevItemUOM = itemUOM;
-                          GlobalVariables.prevExpiry =
-                              DateFormat('MMMM dd, yyyy').format(selectedDate);
+                          GlobalVariables.prevExpiry = DateFormat('MMMM dd, yyyy').format(selectedDate);
                           GlobalVariables.prevQty = qtyController.text.trim();
                           GlobalVariables.prevDTCreated = dt;
                           barcodeController.clear();
@@ -603,14 +622,15 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
         if (mounted) setState(() {});
         myFocusNodeQty.requestFocus();
       } else {
-        itemNotFoundModal(
-            context,
-            Icon(
-              CupertinoIcons.exclamationmark_circle,
-              color: Colors.red,
-              size: 40,
-            ),
-            Text("Item not found. Reason(s): 1.) Barcode not registered"));
+        showAlertDialog();
+        // itemNotFoundModal(
+        //     context,
+        //     Icon(
+        //       CupertinoIcons.exclamationmark_circle,
+        //       color: Colors.red,
+        //       size: 40,
+        //     ),
+        //     Text("Item not found. Reason(s): 1.) Barcode not registered"));
         itemCode = "Unknown";
         itemDescription = "Unknown";
         itemUOM = 'Unknown';
@@ -695,5 +715,41 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       }
     }
 //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
+  }
+  getUnits() async {
+    units = await _sqfliteDBHelper.selectUnitsAll();
+    List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
+        "location = '${GlobalVariables.currentLocationID}'");
+    itemNotFound = x;
+    _loading = false;
+    if (mounted) setState(() {});
+  }
+
+   showAlertDialog(){
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: new Text("Item not found!"),
+          content: new Text("Would you like to add the item to not found list?"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () async{
+                await saveNotFoundBarcode(context, _sqfliteDBHelper, units);
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
