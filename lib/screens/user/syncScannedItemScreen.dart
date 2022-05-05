@@ -365,6 +365,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
   }
   _getCountedNfItems() async {
     _nfitems = await _sqfliteDBHelper.selectItemNotFoundRawQuery(
-        "SELECT barcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
+        "SELECT barcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc,description FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
   }
 }

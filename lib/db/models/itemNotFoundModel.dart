@@ -12,7 +12,7 @@ class ItemNotFound {
   static const colsection='section';
   static const colempno='empno';
   static const colrack='rack_desc';
-  static const coltagging = 'tagging';
+  static const coldescription = 'description';
 
   late final int? id;
   late String? barcode;
@@ -26,7 +26,7 @@ class ItemNotFound {
   late String? section;
   late String? empno;
   late String? rack_desc;
-  late String? tagging;
+  late String? description;
 
   ItemNotFound({
     this.id,
@@ -41,7 +41,7 @@ class ItemNotFound {
     this.section,
     this.empno,
     this.rack_desc,
-    this.tagging
+    this.description
   });
 
   ItemNotFound.fromMap(Map<String, dynamic> map) {
@@ -52,12 +52,12 @@ class ItemNotFound {
     location        = map[colLocation];
     exported        = map[colExported];
     dateTimeCreated = map[colDTCreated];
-    businessUnit    =map[colBu];
-    department      =map[coldept];
-    section         =map[colsection];
-    empno           =map[colempno];
-    rack_desc       =map[colrack];
-    tagging         =map[coltagging];
+    businessUnit    = map[colBu];
+    department      = map[coldept];
+    section         = map[colsection];
+    empno           = map[colempno];
+    rack_desc       = map[colrack];
+    description     = map[coldescription];
   }
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
@@ -72,7 +72,7 @@ class ItemNotFound {
       colsection    : section,
       colempno      : empno,
       colrack       : rack_desc,
-      coltagging    : tagging
+      coldescription    : description
     };
     map[colId] = id;
     return map;

@@ -7,7 +7,6 @@ import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/values/bodySize.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
-
 import 'instantMsgModal.dart';
 
 saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
@@ -52,7 +51,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
     _itemNotFound.section=GlobalVariables.currentSection;
     _itemNotFound.empno=GlobalVariables.logEmpNo;
     _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
-    _itemNotFound.tagging='item code';
+    _itemNotFound.description='item code';
     await db.insertItemNotFound(_itemNotFound);
     myFocusNodeBarcode.requestFocus();
     barcodeController.clear();
@@ -132,7 +131,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                       ),
                       onFieldSubmitted: (value) async {
                       //  myFocusNodeQty.requestFocus();
-                        var res=await db.validateBarcode(value);
+                        var res=await db.validateItemCode(value);
                         itemNotFound=res;
                         if(itemNotFound.isNotEmpty){
                           instantMsgModal(
@@ -319,6 +318,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             _itemNotFound.section=GlobalVariables.currentSection;
                             _itemNotFound.empno=GlobalVariables.logEmpNo;
                             _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
+                            _itemNotFound.description='item code';
                             await db.insertItemNotFound(_itemNotFound);
                             myFocusNodeBarcode.requestFocus();
                             barcodeController.clear();

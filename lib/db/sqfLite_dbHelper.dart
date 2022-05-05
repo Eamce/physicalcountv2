@@ -133,7 +133,8 @@ class SqfliteDBHelper {
         ${ItemNotFound.coldept} TEXT NOT NULL,
         ${ItemNotFound.colsection} TEXT NOT NULL,
         ${ItemNotFound.colempno} TEXT NOT NULL,
-        ${ItemNotFound.colrack} TEXT NOT NULL
+        ${ItemNotFound.colrack} TEXT NOT NULL,
+        ${ItemNotFound.coldescription} TEXT NOT NULL
       )
     ''');
 //--ITEM NOT FOUND--//
@@ -358,7 +359,12 @@ class SqfliteDBHelper {
 
   Future validateBarcode(barcode)async{
     var client = await database;
-    return client.rawQuery("SELECT * FROM items WHERE barcode LIKE '%$barcode%' ",null);
+    return client.rawQuery("SELECT * FROM items WHERE barcode = '$barcode' ",null);
+  }
+
+  Future validateItemCode(itemCode)async{
+    var client = await database;
+    return client.rawQuery("SELECT * FROM items WHERE item_code = '$itemCode' ", null);
   }
 
   Future insertItemBatch(items, int start, int end) async {
