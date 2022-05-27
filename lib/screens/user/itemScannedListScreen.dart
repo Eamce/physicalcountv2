@@ -640,7 +640,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                             context,
                                                             Icon(CupertinoIcons.exclamationmark_circle,
                                                               color: Colors.red,
-                                                              size: 40,
+                                                               size: 40,
                                                             ),
                                                             Text("This item is already synced, you cannot edit synced item."));
                                                       }
@@ -703,8 +703,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                           : Colors.red,
                                                 ),
                                                 Text(
-                                                    _items[index].exported ==
-                                                            'EXPORTED'
+                                                    _items[index].exported == 'EXPORTED'
                                                         ? "Synced to Server Database"
                                                         : "Not synced to Server Database",
                                                     style: TextStyle(
@@ -756,7 +755,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
 
   _refreshItemList() async {
     List<ItemCount> x = await _sqfliteDBHelper.fetchItemCountWhere(
-        "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}'");
+        "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND exported != 'EXPORTED'");
     _items = x;
     _notSynced = [];
     _synced = [];

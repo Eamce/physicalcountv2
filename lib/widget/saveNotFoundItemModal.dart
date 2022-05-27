@@ -51,7 +51,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
     _itemNotFound.section=GlobalVariables.currentSection;
     _itemNotFound.empno=GlobalVariables.logEmpNo;
     _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
-    _itemNotFound.description='item code';
+    _itemNotFound.description='Item Code';
     await db.insertItemNotFound(_itemNotFound);
     myFocusNodeBarcode.requestFocus();
     barcodeController.clear();
@@ -146,16 +146,30 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                           btnSaveEnabled = false;
                         }
                       },
-                      //SCAN NOT FOUND BARCODE
+                      //INPUT NOT FOUND ITEM
                       onChanged: (value) async {
-                        if (barcodeController.text.isNotEmpty &&
-                            qtyController.text.isNotEmpty) {
-                          btnSaveEnabled = true;
-                          setModalState(() {});
-                        } else {
+                        var res=await db.validateItemCode(value);
+                        itemNotFound=res;
+                        if(itemNotFound.isNotEmpty) {
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("Item is in the masterfile."));
+                          barcodeController.clear();
                           btnSaveEnabled = false;
-                          setModalState(() {});
                         }
+                        // if (barcodeController.text.isNotEmpty &&
+                        //     qtyController.text.isNotEmpty) {
+                        //   btnSaveEnabled = true;
+                        //   setModalState(() {});
+                        // } else {
+                        //   btnSaveEnabled = false;
+                        //   setModalState(() {});
+                        // }
                       },
                     ),
                   ),

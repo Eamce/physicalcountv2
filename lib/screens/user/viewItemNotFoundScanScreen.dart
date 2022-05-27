@@ -103,7 +103,7 @@ class _ViewItemNotFoundScanScreenState
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
-                                                text: "Barcode: ",
+                                                text: "${itemNotFound[index].description}: ",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.blue,
@@ -165,11 +165,7 @@ class _ViewItemNotFoundScanScreenState
                                                     ? Colors.green
                                                     : Colors.red,
                                           ),
-                                          Text(
-                                              itemNotFound[index].exported ==
-                                                      'EXPORTED'
-                                                  ? "Synced to Server Database"
-                                                  : "Not synced to Server Database",
+                                          Text(itemNotFound[index].exported == 'EXPORTED' ? "Synced to Server Database" : "Not synced to Server Database",
                                               style: TextStyle(
                                                   fontSize: 15,
                                                   color: Colors.black))
@@ -230,7 +226,7 @@ class _ViewItemNotFoundScanScreenState
 
   _refreshItemList() async {
     List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
-        "location = '${GlobalVariables.currentLocationID}'");
+        "location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
     itemNotFound = x;
     if (mounted) setState(() {});
   }

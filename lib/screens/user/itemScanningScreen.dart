@@ -12,6 +12,7 @@ import 'package:physicalcountv2/widget/customLogicalModal.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/widget/itemNofFoundModal.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../db/models/itemNotFoundModel.dart';
 import '../../widget/saveNotFoundBarcode.dart';
@@ -93,8 +94,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                     context,
                     Text("Are you finished scanning this area? Click YES to tag this area FINISHED. Setting this area to FINISHED will auto lock the area. Continue?"),
                     () => Navigator.pop(context), () async {
-                  var dtls =
-                      "[FINISHED][Audit tag rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc}) to FINISHED]";
+                  var dtls = "[FINISHED][Audit tag rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc}) to FINISHED]";
                   GlobalVariables.isAuditLogged = false;
                   await scanAuditModal(context, _sqfliteDBHelper, dtls);
                   if (GlobalVariables.isAuditLogged == true) {
@@ -218,6 +218,17 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                   onFieldSubmitted: (value) {
                     searchItem(value);
                   },
+                  // onChanged: (value){
+                  //   if(value.isEmpty){
+                  //     itemCode = 'Unknown';
+                  //     itemDescription = 'Unknown';
+                  //     itemUOM = 'Unknown';
+                  //     if (mounted) setState(() {});
+                  //   }else{
+                  //     searchInputtedItem(value);
+                  //   }
+                  //     // myFocusNodeQty.requestFocus();
+                  // },
                 ),
               ),
               Padding(
@@ -247,8 +258,8 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                           text: "Description: ",
                           style: TextStyle(
                               fontSize: 25,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold)),
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold)),
                       TextSpan(
                           text: "$itemDescription",
                           style: TextStyle(fontSize: 25, color: Colors.black))
@@ -324,6 +335,9 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               borderRadius: BorderRadius.circular(3)),
                         ),
                         onChanged: (value) {
+                          if(value.isEmpty){
+                            btnSaveEnabled=false;
+                          }
                           if(value.contains('.') || value.characters.first=='0'){
                             qtyController.clear();
                             btnSaveEnabled = false;
@@ -343,10 +357,11 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                                     size: 40,
                                   ),
                                   Text("Quantity is substantial. Please input below 7 digits amount."));
+                              qtyController.clear();
                               btnSaveEnabled = false;
                               if (mounted) setState(() {});
                             }
-                            if (mounted) setState(() {});
+                          //  if (mounted) setState(() {});
                           } else {
                             btnSaveEnabled = false;
                             if (mounted) setState(() {});
@@ -395,71 +410,8 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                   child: Text("SAVE",
                       style: TextStyle(color: Colors.white, fontSize: 25)),
                   onPressed: () async {
-                    int quantity = int.parse(qtyController.text);
                     if (btnSaveEnabled == true) {
-                      if (selectedDate.toString() !=
-                          "-0001-11-30 00:00:00.000") {
-                        var dtls = "[LOGIN][Audit scan ID to save item.";
-                        GlobalVariables.isAuditLogged = false;
-                        await scanAuditModal(context, _sqfliteDBHelper, dtls);
-                        if (GlobalVariables.isAuditLogged == true) {
-                          //     DateFormat dateFormat1 =
-                          //     DateFormat("yyyy-MM-dd hh:mm:ss aaa");
-                          DateFormat dateFormat1 =
-                              DateFormat("yyyy-MM-dd HH:mm:ss");
-                          String dt = dateFormat1.format(DateTime.now());
-                          _itemCount.barcode = barcodeController.text.trim();
-                          _itemCount.itemcode = itemCode;
-                          _itemCount.description = itemDescription;
-                          _itemCount.uom = itemUOM;
-                          _itemCount.qty = qtyController.text.trim();
-                          _itemCount.conqty =
-                              (int.parse(qtyController.text.trim()) * convQty)
-                                  .toString();
-                          _itemCount.location =
-                              GlobalVariables.currentBusinessUnit;
-                          _itemCount.bu = GlobalVariables.currentDepartment;
-                          _itemCount.area = GlobalVariables.currentSection;
-                          _itemCount.rackno = GlobalVariables.currentRackDesc;
-                          _itemCount.dateTimeCreated = dtItemScanned;
-                          _itemCount.dateTimeSaved = dt;
-                          _itemCount.empNo = GlobalVariables.logEmpNo;
-                          _itemCount.exported = '';
-                          GlobalVariables.countType != 'ANNUAL' &&
-                                  GlobalVariables.enableExpiry == true
-                              ? _itemCount.expiry = selectedDate.toString()
-                              : _itemCount.expiry = "0000-00-00";
-                          _itemCount.locationid =
-                              GlobalVariables.currentLocationID;
-                          await _sqfliteDBHelper.insertItemCount(_itemCount);
-                          _log.date = dateFormat.format(DateTime.now());
-                          _log.time = timeFormat.format(DateTime.now());
-                          _log.device =
-                              "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-                          _log.user = "USER";
-                          _log.empid = GlobalVariables.logEmpNo;
-                          _log.details =
-                              "[ADD][User add item (barcode: ${barcodeController.text.trim()} description: $itemDescription) with qty of ${qtyController.text.trim()} $itemUOM to rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc})]";
-                          await _sqfliteDBHelper.insertLog(_log);
-                          myFocusNodeBarcode.requestFocus();
-                          GlobalVariables.prevBarCode =
-                              barcodeController.text.trim();
-                          GlobalVariables.prevItemCode = itemCode;
-                          GlobalVariables.prevItemDesc = itemDescription;
-                          GlobalVariables.prevItemUOM = itemUOM;
-                          GlobalVariables.prevExpiry = DateFormat('MMMM dd, yyyy').format(selectedDate);
-                          GlobalVariables.prevQty = qtyController.text.trim();
-                          GlobalVariables.prevDTCreated = dt;
-                          barcodeController.clear();
-                          qtyController.clear();
-                          itemCode = "Unknown";
-                          itemDescription = "Unknown";
-                          itemUOM = "Unknown";
-                          selectedDate = DateTime.now();
-                          btnSaveEnabled = false;
-                          if (mounted) setState(() {});
-                        }
-                      } else {
+                      if(itemCode=="Unknown" && itemDescription=="Unknown" && itemUOM=="Unknown" ){
                         instantMsgModal(
                             context,
                             Icon(
@@ -467,7 +419,80 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               color: Colors.red,
                               size: 40,
                             ),
-                            Text("Invalid Expiry Date."));
+                            Text("Error! Please click 'Done' button before saving."));
+                      }else{
+                        if (selectedDate.toString() !=
+                            "-0001-11-30 00:00:00.000") {
+                          var dtls = "[LOGIN][Audit scan ID to save item.";
+                          GlobalVariables.isAuditLogged = false;
+                          await scanAuditModal(context, _sqfliteDBHelper, dtls);
+                          if (GlobalVariables.isAuditLogged == true) {
+                            //     DateFormat dateFormat1 =
+                            //     DateFormat("yyyy-MM-dd hh:mm:ss aaa");
+                            DateFormat dateFormat1 =
+                            DateFormat("yyyy-MM-dd HH:mm:ss");
+                            String dt = dateFormat1.format(DateTime.now());
+                            _itemCount.barcode = barcodeController.text.trim();
+                            _itemCount.itemcode = itemCode;
+                            _itemCount.description = itemDescription;
+                            _itemCount.uom = itemUOM;
+                            _itemCount.qty = qtyController.text.trim();
+                            _itemCount.conqty =
+                                (int.parse(qtyController.text.trim()) * convQty)
+                                    .toString();
+                            _itemCount.location =
+                                GlobalVariables.currentBusinessUnit;
+                            _itemCount.bu = GlobalVariables.currentDepartment;
+                            _itemCount.area = GlobalVariables.currentSection;
+                            _itemCount.rackno = GlobalVariables.currentRackDesc;
+                            _itemCount.dateTimeCreated = dtItemScanned;
+                            _itemCount.dateTimeSaved = dt;
+                            _itemCount.empNo = GlobalVariables.logEmpNo;
+                            _itemCount.exported = '';
+                            GlobalVariables.countType != 'ANNUAL' &&
+                                GlobalVariables.enableExpiry == true
+                                ? _itemCount.expiry = selectedDate.toString()
+                                : _itemCount.expiry = "0000-00-00";
+                            _itemCount.locationid =
+                                GlobalVariables.currentLocationID;
+                            await _sqfliteDBHelper.insertItemCount(_itemCount);
+                            _log.date = dateFormat.format(DateTime.now());
+                            _log.time = timeFormat.format(DateTime.now());
+                            _log.device =
+                            "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+                            _log.user = "USER";
+                            _log.empid = GlobalVariables.logEmpNo;
+                            _log.details =
+                            "[ADD][User add item (barcode: ${barcodeController.text.trim()} description: $itemDescription) with qty of ${qtyController.text.trim()} $itemUOM to rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc})]";
+                            await _sqfliteDBHelper.insertLog(_log);
+                            myFocusNodeBarcode.requestFocus();
+                            GlobalVariables.prevBarCode =
+                                barcodeController.text.trim();
+                            GlobalVariables.prevItemCode = itemCode;
+                            GlobalVariables.prevItemDesc = itemDescription;
+                            GlobalVariables.prevItemUOM = itemUOM;
+                            GlobalVariables.prevExpiry = DateFormat('MMMM dd, yyyy').format(selectedDate);
+                            GlobalVariables.prevQty = qtyController.text.trim();
+                            GlobalVariables.prevDTCreated = dt;
+                            barcodeController.clear();
+                            qtyController.clear();
+                            itemCode = "Unknown";
+                            itemDescription = "Unknown";
+                            itemUOM = "Unknown";
+                            selectedDate = DateTime.now();
+                            btnSaveEnabled = false;
+                            if (mounted) setState(() {});
+                          }
+                        } else {
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("Invalid Expiry Date."));
+                        }
                       }
                     }
                   },
@@ -604,7 +629,6 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       }
     }
 //------BY CATEGORY == TRUE AND BY VENDOR = TRUE------//
-
 //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
     if (GlobalVariables.byCategory == false &&
         GlobalVariables.byVendor == false) {
@@ -634,14 +658,13 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
         itemCode = "Unknown";
         itemDescription = "Unknown";
         itemUOM = 'Unknown';
-        barcodeController.clear();
         if (mounted) setState(() {});
         myFocusNodeBarcode.requestFocus();
+        barcodeController.clear();
         qtyController.clear();
       }
     }
 //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
-
 //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
     if (GlobalVariables.byCategory == true &&
         GlobalVariables.byVendor == false) {
@@ -724,7 +747,6 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
     _loading = false;
     if (mounted) setState(() {});
   }
-
    showAlertDialog(){
     showDialog(
       barrierDismissible: false,
@@ -752,4 +774,173 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       },
     );
   }
+
+    //Future<bool>
+    searchInputtedItem(String data)async{
+    var x = await _sqfliteDBHelper.selectItemWhere(data);
+    if (x.length > 0) {
+      itemCode = x[0]['item_code'];
+      itemDescription = x[0]['desc'];
+      itemUOM = x[0]['uom'];
+      dtItemScanned = dateFormat.format(DateTime.now()) + " " + timeFormat.format(DateTime.now());
+      convQty = int.parse(x[0]['conversion_qty']);
+      if (mounted) setState(() {});
+  //  return Future<bool>.value(true);
+    }else{
+      itemCode = 'Unknown';
+      itemDescription = 'Unknown';
+      itemUOM = 'Unknown';
+      if (mounted) setState(() {});
+   //   return Future<bool>.value(false);
+    }
+  }
+
+//   searchInputtedItem(String value) async {
+//     print(GlobalVariables.byCategory);
+//     print(GlobalVariables.byVendor);
+// //------BY CATEGORY == TRUE AND BY VENDOR = TRUE------//
+//     if (GlobalVariables.byCategory == true &&
+//         GlobalVariables.byVendor == true) {
+//       print('//------BY CATEGORY == TRUE AND BY VENDOR = TRUE------//');
+//       var x = await _sqfliteDBHelper.selectItemWhereCatVen(value,
+//           "AND ggroup IN (${GlobalVariables.categories}) AND vendor_name IN (${GlobalVariables.vendors})");
+//       if (x.length > 0) {
+//         itemCode = x[0]['item_code'];
+//         itemDescription = x[0]['desc'];
+//         itemUOM = x[0]['uom'];
+//         dtItemScanned = dateFormat.format(DateTime.now()) +
+//             " " +
+//             timeFormat.format(DateTime.now());
+//         convQty = int.parse(x[0]['conversion_qty']);
+//         if (mounted) setState(() {});
+//         myFocusNodeQty.requestFocus();
+//       } else {
+//         // itemNotFoundModal(
+//         //     context,
+//         //     Icon(
+//         //       CupertinoIcons.exclamationmark_circle,
+//         //       color: Colors.red,
+//         //       size: 40,
+//         //     ),
+//         //     Text("Item not found. Reason(s): 1.) Barcode not registered 2.) Item is not belong to category ${GlobalVariables.categories} 3.) Item is not belong to vendor ${GlobalVariables.vendors}"));
+//         itemCode = "Unknown";
+//         itemDescription = "Unknown";
+//         itemUOM = 'Unknown';
+//         barcodeController.clear();
+//         if (mounted) setState(() {});
+//         myFocusNodeBarcode.requestFocus();
+//         qtyController.clear();
+//       }
+//     }
+// //------BY CATEGORY == TRUE AND BY VENDOR = TRUE------//
+// //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
+//     if (GlobalVariables.byCategory == false &&
+//         GlobalVariables.byVendor == false) {
+//       print('//------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//');
+//       var x = await _sqfliteDBHelper.selectItemWhere(value);
+//       print('VALUE : $value');
+//       if (x.length > 0) {
+//         itemCode = x[0]['item_code'];
+//         itemDescription = x[0]['desc'];
+//         itemUOM = x[0]['uom'];
+//         dtItemScanned = dateFormat.format(DateTime.now()) +
+//             " " +
+//             timeFormat.format(DateTime.now());
+//         convQty = int.parse(x[0]['conversion_qty']);
+//         if (mounted) setState(() {});
+//         myFocusNodeQty.requestFocus();
+//       } else {
+//        // showAlertDialog();
+//         // itemNotFoundModal(
+//         //     context,
+//         //     Icon(
+//         //       CupertinoIcons.exclamationmark_circle,
+//         //       color: Colors.red,
+//         //       size: 40,
+//         //     ),
+//         //     Text("Item not found. Reason(s): 1.) Barcode not registered"));
+//         itemCode = "Unknown";
+//         itemDescription = "Unknown";
+//         itemUOM = 'Unknown';
+//         barcodeController.clear();
+//         if (mounted) setState(() {});
+//         myFocusNodeBarcode.requestFocus();
+//         qtyController.clear();
+//       }
+//     }
+// //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
+// //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
+//     if (GlobalVariables.byCategory == true &&
+//         GlobalVariables.byVendor == false) {
+//       print('//------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//');
+//       var x = await _sqfliteDBHelper.selectItemWhereCatVen(
+//           value, "AND ggroup IN (${GlobalVariables.categories})");
+//       if (x.length > 0) {
+//         itemCode = x[0]['item_code'];
+//         itemDescription = x[0]['desc'];
+//         itemUOM = x[0]['uom'];
+//         dtItemScanned = dateFormat.format(DateTime.now()) +
+//             " " +
+//             timeFormat.format(DateTime.now());
+//         convQty = int.parse(x[0]['conversion_qty']);
+//         if (mounted) setState(() {});
+//         myFocusNodeQty.requestFocus();
+//       } else {
+//         itemNotFoundModal(
+//             context,
+//             Icon(
+//               CupertinoIcons.exclamationmark_circle,
+//               color: Colors.red,
+//               size: 40,
+//             ),
+//             Text(
+//                 "Item not found. Reason(s): 1.) Barcode not registered 2.) Item is not belong to category ${GlobalVariables.categories}"));
+//         itemCode = "Unknown";
+//         itemDescription = "Unknown";
+//         itemUOM = 'Unknown';
+//         barcodeController.clear();
+//         if (mounted) setState(() {});
+//         myFocusNodeBarcode.requestFocus();
+//         qtyController.clear();
+//       }
+//     }
+// //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
+// //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
+//     if (GlobalVariables.byCategory == false &&
+//         GlobalVariables.byVendor == true) {
+//       print('//------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//');
+//       var x = await _sqfliteDBHelper.selectItemWhereCatVen(
+//           value, "AND vendor_name IN (${GlobalVariables.vendors})");
+//       if (x.length > 0) {
+//         itemCode = x[0]['item_code'];
+//         itemDescription = x[0]['desc'];
+//         itemUOM = x[0]['uom'];
+//         dtItemScanned = dateFormat.format(DateTime.now()) +
+//             " " +
+//             timeFormat.format(DateTime.now());
+//         convQty = int.parse(x[0]['conversion_qty']);
+//         if (mounted) setState(() {});
+//         myFocusNodeQty.requestFocus();
+//       } else {
+//         print(x);
+//         itemNotFoundModal(
+//             context,
+//             Icon(
+//               CupertinoIcons.exclamationmark_circle,
+//               color: Colors.red,
+//               size: 40,
+//             ),
+//             Text(
+//                 "Item not found. Reason(s): 1.) Barcode not registered 2.) Item is not belong to vendor ${GlobalVariables.vendors}"));
+//         itemCode = "Unknown";
+//         itemDescription = "Unknown";
+//         itemUOM = 'Unknown';
+//         barcodeController.clear();
+//         if (mounted) setState(() {});
+//         myFocusNodeBarcode.requestFocus();
+//         qtyController.clear();
+//       }
+//     }
+// //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
+//   }
 }

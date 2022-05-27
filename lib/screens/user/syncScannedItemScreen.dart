@@ -8,6 +8,7 @@ import 'package:physicalcountv2/db/models/itemNotFoundModel.dart';
 import 'package:physicalcountv2/db/models/logsModel.dart';
 import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/services/api.dart';
+import 'package:physicalcountv2/syncscreentoserver.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
@@ -20,7 +21,7 @@ class SyncScannedItemScreen extends StatefulWidget {
   _SyncScannedItemScreenState createState() => _SyncScannedItemScreenState();
 }
 
-class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
+class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with SingleTickerProviderStateMixin {
   final GlobalKey<SfSignaturePadState> signatureUserGlobalKey = GlobalKey();
   final GlobalKey<SfSignaturePadState> signatureAuditGlobalKey = GlobalKey();
 
@@ -30,7 +31,8 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
   List _nfitems = [];
   String _auditor = "";
   bool checkingNetwork = false;
-
+  bool syncingStatus = false;
+  late AnimationController animationController;
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
@@ -39,9 +41,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
     _getMyAudit();
-
     super.initState();
   }
 
@@ -65,7 +65,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                 child: Material(
                   type: MaterialType.transparency,
                   child: Text(
-                    "Sync Count Data to Server Database",
+                    "Sync Count Data to Database",
                     maxLines: 2,
                     style: TextStyle(
                         fontSize: 20,
@@ -74,6 +74,21 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                   ),
                 ),
               ),
+              // Flexible(
+              //     child: syncingStatus == false ? '' : syncingStatus==true ? AnimatedBuilder(
+              //       animation: animationController,
+              //          child: Icon(
+              //           CupertinoIcons.arrow_2_circlepath,
+              //           color: Colors.blue),
+              //           builder: (BuildContext context,
+              //           Widget? _widget) {
+              //       return new Transform.rotate(
+              //         angle: animationController.value * 40,
+              //         child: _widget,
+              //     );
+              //   },
+              //   )
+              // ),
             ],
           ),
         ),
@@ -135,9 +150,13 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                         color: Colors.red,
                         size: 40,
                       ),
-                      Text(
-                          "User signature and Auditor signature are required to signed before syncing."));
+                      Text("User signature and Auditor signature are required to signed before syncing."));
                 } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SyncScreen(passbytesUser: bytesUser!.buffer.asUint8List().toString(),passbytesAudit: bytesAudit!.buffer.asUint8List().toString())),
+                  ).then((result){
+                  });
                   continueSync(base64Encode(bytesUser!.buffer.asUint8List()),
                       base64Encode(bytesAudit!.buffer.asUint8List()));
                 }
@@ -310,12 +329,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
         if (res == true) {
           _log.date = dateFormat.format(DateTime.now());
           _log.time = timeFormat.format(DateTime.now());
-          _log.device =
-              "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+          _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
           _log.user = "USER";
           _log.empid = GlobalVariables.logEmpNo;
-          _log.details =
-              "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
+          _log.details = "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
           await _sqfliteDBHelper.insertLog(_log);
           checkingNetwork = false;
           if (mounted) setState(() {
@@ -329,7 +346,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> {
                 size: 40,
               ),
               Text("Data successfully synced."));
-
         } else {
           checkingNetwork = false;
           if (mounted) setState(() {});

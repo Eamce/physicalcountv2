@@ -10,7 +10,6 @@ import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 
 class SyncDatabaseScreen extends StatefulWidget {
-  const SyncDatabaseScreen({Key? key}) : super(key: key);
 
   @override
   _SyncDatabaseScreenState createState() => _SyncDatabaseScreenState();

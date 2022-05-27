@@ -37,8 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-     emppinController.text="480080767534";
-     empnoController.text="01000042637";
+     emppinController.text="947670329361";
+     empnoController.text="1000043388";
     // emppinController.text="105313324137";
     // empnoController.text="01000042072";
 

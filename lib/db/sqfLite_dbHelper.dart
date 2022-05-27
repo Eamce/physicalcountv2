@@ -507,8 +507,7 @@ class SqfliteDBHelper {
 
   Future<List<ItemCount>> fetchItemCountWhere(String where) async {
     Database db = await database;
-    List<Map<String, Object?>> itemCount =
-        await db.query(ItemCount.tblItemCount, where: where);
+    List<Map<String, Object?>> itemCount = await db.query(ItemCount.tblItemCount, where: where);
     return itemCount.length == 0
         ? []
         : itemCount.map((e) => ItemCount.fromMap(e)).toList();
