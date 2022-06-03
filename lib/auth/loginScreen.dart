@@ -9,6 +9,7 @@ import 'package:physicalcountv2/values/assets.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -37,8 +38,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-     emppinController.text="947670329361";
-     empnoController.text="1000043388";
+    // emppinController.text="947670329361";
+    // empnoController.text="1000043388";
     // emppinController.text="105313324137";
     // empnoController.text="01000042072";
 
@@ -243,13 +244,12 @@ class _LoginScreenState extends State<LoginScreen> {
       if (empnoController.text.trim() == "1001" &&
           emppinController.text.trim() == "1001") {
         //logs
-        _log.date = dateFormat.format(DateTime.now());
-        _log.time = timeFormat.format(DateTime.now());
-        _log.device =
-            "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
-        _log.details = "[LOGIN][Admin Login]";
+        _log.date     = dateFormat.format(DateTime.now());
+        _log.time     = timeFormat.format(DateTime.now());
+        _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+        _log.user     = "ADMIN";
+        _log.empid    = "ADMIN";
+        _log.details  = "[LOGIN][Admin Login]";
         await _sqfliteDBHelper.insertLog(_log);
         Navigator.push(
           context,
@@ -262,26 +262,26 @@ class _LoginScreenState extends State<LoginScreen> {
           String locationId=ls[0]['location_id'];
           var filter = await _sqfliteDBHelper.selectFilterWhere(locationId);
           print(filter);
-          GlobalVariables.byCategory = filter[0]['byCategory'] == 'True' ? true : false;
-          GlobalVariables.categories = filter[0]['categoryName'];
-          GlobalVariables.byVendor = filter[0]['byVendor'] == 'True' ? true : false;
-          GlobalVariables.vendors = filter[0]['vendorName'];
-          GlobalVariables.countType = filter[0]['ctype'];
-          GlobalVariables.enableExpiry = false;
-          GlobalVariables.prevBarCode = "Unknown";
-          GlobalVariables.prevItemCode = "Unknown";
-          GlobalVariables.prevItemDesc = "Unknown";
-          GlobalVariables.prevItemUOM = "Unknown";
-          GlobalVariables.prevQty = "Unknown";
+          GlobalVariables.byCategory    = filter[0]['byCategory'] == 'True' ? true : false;
+          GlobalVariables.categories    = filter[0]['categoryName'];
+          GlobalVariables.byVendor      = filter[0]['byVendor'] == 'True' ? true : false;
+          GlobalVariables.vendors       = filter[0]['vendorName'];
+          GlobalVariables.countType     = filter[0]['ctype'];
+          GlobalVariables.enableExpiry  = false;
+          GlobalVariables.prevBarCode   = "Unknown";
+          GlobalVariables.prevItemCode  = "Unknown";
+          GlobalVariables.prevItemDesc  = "Unknown";
+          GlobalVariables.prevItemUOM   = "Unknown";
+          GlobalVariables.prevQty       = "Unknown";
           GlobalVariables.prevDTCreated = "Unknown";
-          GlobalVariables.logEmpNo = empnoController.text.trim();
-          GlobalVariables.logFullName = ls[0]['name'];
-          _log.date = dateFormat.format(DateTime.now());
-          _log.time = timeFormat.format(DateTime.now());
-          _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-          _log.user = "USER";
-          _log.empid = GlobalVariables.logEmpNo;
-          _log.details = "[LOGIN][User Login]";
+          GlobalVariables.logEmpNo      = empnoController.text.trim();
+          GlobalVariables.logFullName   = ls[0]['name'];
+          _log.date     = dateFormat.format(DateTime.now());
+          _log.time     = timeFormat.format(DateTime.now());
+          _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+          _log.user     = GlobalVariables.logFullName;
+          _log.empid    = GlobalVariables.logEmpNo;
+          _log.details  = "[LOGIN][Inventory Clerk]";
           await _sqfliteDBHelper.insertLog(_log);
           Navigator.push(
             context,

@@ -152,11 +152,11 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                       ),
                       Text("User signature and Auditor signature are required to signed before syncing."));
                 } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SyncScreen(passbytesUser: bytesUser!.buffer.asUint8List().toString(),passbytesAudit: bytesAudit!.buffer.asUint8List().toString())),
-                  ).then((result){
-                  });
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => SyncScreen(passbytesUser: bytesUser!.buffer.asUint8List().toString(),passbytesAudit: bytesAudit!.buffer.asUint8List().toString())),
+                  // ).then((result){
+                  // });
                   continueSync(base64Encode(bytesUser!.buffer.asUint8List()),
                       base64Encode(bytesAudit!.buffer.asUint8List()));
                 }
@@ -258,7 +258,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
       ),
     );
   }
-
   _getMyAudit() async {
     _myAudit = [];
     _auditor = "";
@@ -269,16 +268,13 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
     }
     if (mounted) setState(() {});
   }
-
   continueSync(String bytesUser, String bytesAudit) async {
     print(GlobalVariables.currentLocationID);
     checkingNetwork = true;
     if (mounted) setState(() {});
-
     var res = await checkIfConnectedToNetwork();
     // checkingNetwork = false;
     // if (mounted) setState(() {});
-
     if (res == 'error') {
       checkingNetwork = false;
       if (mounted) setState(() {});
@@ -310,14 +306,12 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
         await _sqfliteDBHelper.updateItemNotFoundByLocation(
             GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
         if (res == true) {
-          _log.date = dateFormat.format(DateTime.now());
-          _log.time = timeFormat.format(DateTime.now());
-          _log.device =
-              "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-          _log.user = "USER";
-          _log.empid = GlobalVariables.logEmpNo;
-          _log.details =
-              "[SYNCED][USER Synced Not Found Item on Location ID: ${GlobalVariables.currentLocationID}]";
+          _log.date     = dateFormat.format(DateTime.now());
+          _log.time     = timeFormat.format(DateTime.now());
+          _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+          _log.user     = GlobalVariables.logFullName;
+          _log.empid    = GlobalVariables.logEmpNo;
+          _log.details  = "[SYNCED][USER Synced Not Found Item on Location ID: ${GlobalVariables.currentLocationID}]";
           await _sqfliteDBHelper.insertLog(_log);
         }
       }
@@ -327,12 +321,12 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
         await _sqfliteDBHelper.updateItemCountByLocation(
             GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
         if (res == true) {
-          _log.date = dateFormat.format(DateTime.now());
-          _log.time = timeFormat.format(DateTime.now());
-          _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-          _log.user = "USER";
-          _log.empid = GlobalVariables.logEmpNo;
-          _log.details = "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
+          _log.date     = dateFormat.format(DateTime.now());
+          _log.time     = timeFormat.format(DateTime.now());
+          _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+          _log.user     = GlobalVariables.logFullName;
+          _log.empid    = GlobalVariables.logEmpNo;
+          _log.details  = "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
           await _sqfliteDBHelper.insertLog(_log);
           checkingNetwork = false;
           if (mounted) setState(() {

@@ -176,6 +176,7 @@ class SqfliteDBHelper {
       )
     ''');
 //--ITEMCOUNT TABLE--//
+
   }
 
 //-----------------LOGS-----------------//
@@ -537,4 +538,9 @@ class SqfliteDBHelper {
         "UPDATE ${ItemCount.tblItemCount} SET $column WHERE location_id='$locationid'");
   }
 //-----------------ITEMCOUNT-----------------//
+
+ Future getAuditInfo(String id)async{
+    var db= await database;
+    return db.rawQuery("SELECT * FROM audit where emp_no = '$id'");
+ }
 }

@@ -637,7 +637,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       print('VALUE : $value');
       if (x.length > 0) {
         itemCode = x[0]['item_code'];
-        itemDescription = x[0]['desc'];
+        itemDescription = x[0]['extended_desc'];
         itemUOM = x[0]['uom'];
         dtItemScanned = dateFormat.format(DateTime.now()) +
             " " +

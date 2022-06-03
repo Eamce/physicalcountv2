@@ -19,6 +19,8 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
   final barcodeController = TextEditingController();
   final qtyController = TextEditingController();
 
+
+
   bool btnSaveEnabled = false;
 
   ItemNotFound _itemNotFound = ItemNotFound();
@@ -113,7 +115,6 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             color: Colors.blue,
                             fontWeight: FontWeight.bold)),
                   ),
-                  //01000006481
                   Padding(
                     padding: const EdgeInsets.only(
                         left: 20.0, right: 20.0, bottom: 10.0),
@@ -129,47 +130,16 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(3)),
                       ),
-                      onFieldSubmitted: (value) async {
-                      //  myFocusNodeQty.requestFocus();
-                        var res=await db.validateItemCode(value);
-                        itemNotFound=res;
-                        if(itemNotFound.isNotEmpty){
-                          instantMsgModal(
-                              context,
-                              Icon(
-                                CupertinoIcons.exclamationmark_circle,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                              Text("Item is in the masterfile."));
-                          barcodeController.clear();
-                          btnSaveEnabled = false;
+                      //INPUT NOT FOUND ITEM USING ITEM CODE
+                      onChanged: (value) {
+                        if(value.isEmpty || _selectedUom=='' || qtyController.text.isEmpty){
+                          btnSaveEnabled=false;
+                        }else{
+                          btnSaveEnabled=true;
                         }
-                      },
-                      //INPUT NOT FOUND ITEM
-                      onChanged: (value) async {
-                        var res=await db.validateItemCode(value);
-                        itemNotFound=res;
-                        if(itemNotFound.isNotEmpty) {
-                          instantMsgModal(
-                              context,
-                              Icon(
-                                CupertinoIcons.exclamationmark_circle,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                              Text("Item is in the masterfile."));
-                          barcodeController.clear();
-                          btnSaveEnabled = false;
-                        }
-                        // if (barcodeController.text.isNotEmpty &&
-                        //     qtyController.text.isNotEmpty) {
-                        //   btnSaveEnabled = true;
-                        //   setModalState(() {});
-                        // } else {
-                        //   btnSaveEnabled = false;
-                        //   setModalState(() {});
-                        // }
+                        print('_uomm barcode:  ');
+                        print(_selectedUom.trim());
+                        print('_uommmmm barcode: $_uom ');
                       },
                     ),
                   ),
@@ -195,8 +165,18 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                         ),
                       ),
                       onChanged: (val) {
-                        _selectedUom = val.toString();
+                        if(barcodeController.text.isEmpty || val=='' || qtyController.text.isEmpty){
+                          btnSaveEnabled=false;
+                        }else{
+                          btnSaveEnabled=true;
+                          _selectedUom = val.toString();
+                        }
                         setModalState(() {});
+                        print('_uomm: ');
+                        print(_selectedUom.trim());
+                        print('_uommmmm: $_uom ');
+                        // _selectedUom = val.toString();
+                        // setModalState(() {});
                       },
                     ),
                   ),
@@ -270,17 +250,13 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(3)),
                         ),
-                        onFieldSubmitted: (value) {
-                          qtyController.clear();
-                          btnSaveEnabled=false;
-                        },
                         onChanged: (value) {
                           if(value.contains('.') || value.characters.first=='0'){
                             qtyController.clear();
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
-                          if (barcodeController.text.isNotEmpty &&
+                          if (barcodeController.text.isNotEmpty && _selectedUom!='' &&
                               qtyController.text.isNotEmpty) {
                             btnSaveEnabled = true;
                             setModalState(() {});
@@ -288,6 +264,9 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
+                          print('_uomm quantity:  ');
+                          print(_selectedUom.trim());
+                          print('_uommmmm quantity: $_uom ');
                         },
                       ),
                     ),
@@ -307,23 +286,12 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                           GlobalVariables.isAuditLogged = false;
                           await scanAuditModal(context, db, dtls);
                           if (GlobalVariables.isAuditLogged == true) {
-                            // if(barcodeController.text.length<=6){
-                            //   //save item code
-                            // }
-                            // if(barcodeController.text.length>6){
-                            //   //save barcode
-                            //   save();
-                            //   setModalState(() {});
-                            // }
-                            DateFormat dateFormat1 =
-                                DateFormat("yyyy-MM-dd hh:mm:ss aaa");
+                            DateFormat dateFormat1 = DateFormat("yyyy-MM-dd hh:mm:ss aaa");
                             String dt = dateFormat1.format(DateTime.now());
-                            _itemNotFound.barcode =
-                                barcodeController.text.trim();
+                            _itemNotFound.barcode = barcodeController.text.trim();
                             _itemNotFound.uom = _selectedUom.trim();
                             _itemNotFound.qty = qtyController.text.trim();
-                            _itemNotFound.location =
-                                GlobalVariables.currentLocationID;
+                            _itemNotFound.location = GlobalVariables.currentLocationID;
                             _itemNotFound.exported = 'false';
                             _itemNotFound.dateTimeCreated = dt;
                             //ADDED ATTRIBUTES TO NOT FOUND TABLE
@@ -339,8 +307,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             qtyController.clear();
                             btnSaveEnabled = false;
                             setModalState(() {});
-                            var rs = await db.selectItemNotFoundWhere(
-                                GlobalVariables.currentLocationID);
+                            var rs = await db.selectItemNotFoundWhere(GlobalVariables.currentLocationID);
                             print(rs);
                           }
                         }

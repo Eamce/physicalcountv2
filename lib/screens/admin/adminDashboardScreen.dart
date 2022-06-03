@@ -27,7 +27,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
     super.initState();
   }
 

@@ -6,6 +6,8 @@ import 'package:physicalcountv2/values/bodySize.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
+import 'instantMsgModal.dart';
+
 updateItemModal(
     BuildContext context,
     SqfliteDBHelper db,
@@ -24,6 +26,7 @@ updateItemModal(
   myFocusNodeQty.requestFocus();
 
   DateTime selectedDate = DateTime.parse(expiry);
+  int int_qty =int.parse(qty);
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -171,7 +174,17 @@ updateItemModal(
                                 borderRadius: BorderRadius.circular(3)),
                           ),
                           onChanged: (value) {
-
+                            if(int_qty<int.parse(value)){
+                              instantMsgModal(
+                                  context,
+                                  Icon(
+                                    CupertinoIcons.exclamationmark_circle,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                  Text("ERROR!"));
+                              qtyController.text=qty;
+                            }
                           },
                         ),
                       ),
@@ -193,13 +206,24 @@ updateItemModal(
                           ),
                           onPressed: () async {
                             GlobalVariables.isAuditLogged = false;
-                            await scanAuditModal(context, db, details);
-                            if (GlobalVariables.isAuditLogged == true) {
-                              await db.updateItemCountWhere(int.parse(id),
-                                  "qty = '${qtyController.text.trim()}', expiry = '$selectedDate'");
-                              Navigator.pop(context);
+                            if (GlobalVariables.isAuditLogged == false && qtyController.text.isEmpty) {
+                              instantMsgModal(
+                                  context,
+                                  Icon(
+                                    CupertinoIcons.exclamationmark_circle,
+                                    color: Colors.red,
+                                    size: 40,
+                                  ),
+                                  Text("ERROR! Please input quantity!"));
+                            }else{
+                               await scanAuditModal(context, db, details);
                             }
-                          },
+                          if (GlobalVariables.isAuditLogged == true && qtyController.text.isNotEmpty) {
+                            await db.updateItemCountWhere(int.parse(id),
+                                "qty = '${qtyController.text.trim()}', expiry = '$selectedDate'");
+                            Navigator.pop(context);
+                          }
+                          }
                         ),
                       ),
                     ],

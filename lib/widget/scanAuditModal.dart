@@ -12,14 +12,12 @@ scanAuditModal(BuildContext context, SqfliteDBHelper db, String details) {
   myFocusNodeAuditEmpNo = FocusNode();
   myFocusNodeAuditEmpNo.requestFocus();
   final auditempnoController = TextEditingController();
-
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
-
   bool obscureAuditENumber = true;
-
   return showModalBottomSheet(
+    isDismissible: false,
     isScrollControlled: true,
     context: context,
     backgroundColor: Colors.transparent,
@@ -108,7 +106,7 @@ scanAuditModal(BuildContext context, SqfliteDBHelper db, String details) {
                           _log.time = timeFormat.format(DateTime.now());
                           _log.device =
                               "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-                          _log.user = "Audit";
+                          _log.user = "[Audit] ";
                           _log.empid = auditempnoController.text.trim();
                           _log.details = details.toString();
                           await db.insertLog(_log);

@@ -303,7 +303,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       if (element['selected'] == true) element['status'] = "waiting";
     });
     if (mounted) setState(() {});
-
 //------------------USER MASTERFILE------------------//
     if (tables[0]['selected'] == true) {
       if (tables[0]['truncate'] == true) {
@@ -322,10 +321,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       userMasterfileData = await getUserMasterfile();
       await _sqfliteDBHelper.insertUserBatch(
           userMasterfileData, 0, userMasterfileData.length);
-
       userMasterfileCount = userMasterfileCount + userMasterfileData.length;
       if (mounted) setState(() {});
-
       tables[0]['status'] = "done";
       if (mounted) setState(() {});
       //logs

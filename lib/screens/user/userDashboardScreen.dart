@@ -240,9 +240,9 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "USER";
+      _log.user = GlobalVariables.logFullName;
       _log.empid = GlobalVariables.logEmpNo;
-      _log.details = "[LOGOUT][USER Logout]";
+      _log.details = "[LOGOUT][Inventory Clerk]";
       await _sqfliteDBHelper.insertLog(_log);
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(

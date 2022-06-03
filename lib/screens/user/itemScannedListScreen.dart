@@ -69,7 +69,6 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -307,8 +306,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                       style: TextStyle(
                                                           fontSize: 15,
                                                           color: Colors.blue,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                          fontWeight: FontWeight.bold)),
                                                   TextSpan(
                                                       text: _items2[index]['qty'],
                                                       style: TextStyle(
@@ -326,12 +324,10 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                           right: 8.0),
                                                   child: ElevatedButton(
                                                     style: ElevatedButton.styleFrom(
-                                                            primary: Colors
-                                                                .yellow[700]),
+                                                            primary: Colors.yellow[700]),
                                                     child: Row(
                                                       children: [
-                                                        Icon(CupertinoIcons
-                                                            .pencil),
+                                                        Icon(CupertinoIcons.pencil),
                                                         Text("Edit"),
                                                       ],
                                                     ),

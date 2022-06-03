@@ -5,7 +5,7 @@ class GlobalVariables {
   static String httpError = '';
 
   static String deviceInfo = "";
-  static String readdeviceInfo = "";
+  static String   readdeviceInfo = "";
 
   static String logEmpNo = "";
   static String logFullName = "";
@@ -36,4 +36,9 @@ class GlobalVariables {
   static String saveAuditSignature = '';
 
   static String searchItemBarcode = '';
+
+  static String editedQuantity='';
+  static int editCount=0;
+
+
 }
