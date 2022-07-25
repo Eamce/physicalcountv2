@@ -82,8 +82,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                     );
                   }),
                   Divider(),
-                  GlobalVariables.byCategory == true &&
-                          GlobalVariables.byVendor ==
+                  GlobalVariables.byCategory == true && GlobalVariables.byVendor ==
                               true //------BY CATEGORY == TRUE AND BY VENDOR = TRUE------//
                       ? Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -97,22 +96,16 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                                         color: Colors.blue,
                                         fontWeight: FontWeight.bold)),
                                 TextSpan(
-                                    text:
-                                        "1. Item belongs to category ${GlobalVariables.categories}\n",
-                                    style: TextStyle(
-                                        fontSize: 25, color: Colors.black)),
+                                    text: "1. Item belongs to category ${GlobalVariables.categories}\n",
+                                    style: TextStyle(fontSize: 25, color: Colors.black)),
                                 TextSpan(
-                                    text:
-                                        "2. Item belongs to vendor ${GlobalVariables.vendors}",
-                                    style: TextStyle(
-                                        fontSize: 25, color: Colors.black))
+                                    text: "2. Item belongs to vendor ${GlobalVariables.vendors}",
+                                    style: TextStyle(fontSize: 25, color: Colors.black))
                               ],
                             ),
                           ),
                         )
-                      : GlobalVariables.byCategory == false &&
-                              GlobalVariables.byVendor ==
-                                  false //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
+                      : GlobalVariables.byCategory == false && GlobalVariables.byVendor == false //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
                           ? Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: RichText(
@@ -136,9 +129,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                                 ),
                               ),
                             )
-                          : GlobalVariables.byCategory == true &&
-                                  GlobalVariables.byVendor ==
-                                      false //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
+                          : GlobalVariables.byCategory == true && GlobalVariables.byVendor == false //------BY CATEGORY == TRUE AND BY VENDOR = FALSE------//
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: RichText(
@@ -160,9 +151,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                                     ),
                                   ),
                                 )
-                              : GlobalVariables.byCategory == false &&
-                                      GlobalVariables.byVendor ==
-                                          true //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
+                              : GlobalVariables.byCategory == false && GlobalVariables.byVendor == true //------BY CATEGORY == FALSE AND BY VENDOR = TRUE------//
                                   ? Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: RichText(
@@ -184,7 +173,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                                           ],
                                         ),
                                       ),
-                                    )
+                                  )
                                   : SizedBox(),
                 ],
               ),
@@ -232,14 +221,12 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
       onTap: voidCallback,
     );
   }
-
   logOut() {
     customLogicalModal(context, Text("Are you sure you want to logout?"),
         () => Navigator.pop(context), () async {
       _log.date = dateFormat.format(DateTime.now());
       _log.time = timeFormat.format(DateTime.now());
-      _log.device =
-          "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+      _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
       _log.user = GlobalVariables.logFullName;
       _log.empid = GlobalVariables.logEmpNo;
       _log.details = "[LOGOUT][Inventory Clerk]";

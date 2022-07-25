@@ -121,7 +121,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                       color: Colors.white,
                     ),
                     Text(
-                      " Start to sync",
+                      "Start to sync",
                       style: TextStyle(color: Colors.white, fontSize: 25),
                     ),
                   ],
@@ -129,11 +129,11 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
               ),
               onPressed: () async {
                 final dataUser = await signatureUserGlobalKey.currentState!
-                    .toImage(pixelRatio: 3.0);
+                    .toImage(pixelRatio: 2.0); //3.0
                 final bytesUser =
                     await dataUser.toByteData(format: ui.ImageByteFormat.png);
                 final dataAudit = await signatureAuditGlobalKey.currentState!
-                    .toImage(pixelRatio: 3.0);
+                    .toImage(pixelRatio: 2.0); //3.0
                 final bytesAudit =
                     await dataAudit.toByteData(format: ui.ImageByteFormat.png);
                 print(signatureAuditGlobalKey.currentState!.toPathList());
@@ -189,8 +189,11 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                       // minimumStrokeWidth: 1.0,
                       // maximumStrokeWidth: 4.0,
                     ),
+                    // height: 100,
+                    // width: 200,
                     decoration:
-                        BoxDecoration(border: Border.all(color: Colors.grey)))),
+                        BoxDecoration(
+                            border: Border.all(color: Colors.grey)))),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -204,7 +207,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
             Row(
               children: [
                 Text(
-                  "  Auditor Signature",
+                  "Auditor Signature",
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
@@ -233,7 +236,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
               ],
             ),
             Padding(
-                padding: EdgeInsets.only(right: 8, left: 8),
+                padding: EdgeInsets.only(right: 10, left: 10),
                 child: Container(
                     child: SfSignaturePad(
                         key: signatureAuditGlobalKey,
@@ -375,6 +378,6 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
   }
   _getCountedNfItems() async {
     _nfitems = await _sqfliteDBHelper.selectItemNotFoundRawQuery(
-        "SELECT barcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc,description FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
+        "SELECT barcode,itemcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc,description FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
   }
 }

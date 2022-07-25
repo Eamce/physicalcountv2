@@ -52,7 +52,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
           return CupertinoAlertDialog(
             title: new Text("Item not found!"),
             actions: <Widget>[
-              new FlatButton(
+              new TextButton(
                 child: new Text("Close"),
                 onPressed: () {
                   _refreshItemList();
@@ -129,7 +129,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                               //  onChanged: _onSearched,
                             ),
                             actions: <Widget>[
-                              new FlatButton(
+                              new TextButton(
                                 child: new Text("Search"),
                                 onPressed: () {
                                   onSearched(_textController.text.trim());
@@ -138,7 +138,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                   Navigator.of(context).pop();
                                 },
                               ),
-                              new FlatButton(
+                              new TextButton(
                                 child: new Text("Close"),
                                 onPressed: () {
                                   _refreshItemList();

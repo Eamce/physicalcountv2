@@ -380,9 +380,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                       child: Row(
                         children: [
                           Icon(CupertinoIcons.delete_left, color: Colors.red),
-                          Text(" Clear Fields",
-                              style:
-                                  TextStyle(color: Colors.red, fontSize: 25)),
+                          Text(" Clear Fields", style: TextStyle(color: Colors.red, fontSize: 25)),
                         ],
                       ),
                       onPressed: () {
@@ -423,7 +421,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                       }else{
                         if (selectedDate.toString() !=
                             "-0001-11-30 00:00:00.000") {
-                          var dtls = "[LOGIN][Audit scan ID to save item.";
+                          var dtls = "[LOGIN] Audit scan ID to save item.";
                           GlobalVariables.isAuditLogged = false;
                           await scanAuditModal(context, _sqfliteDBHelper, dtls);
                           if (GlobalVariables.isAuditLogged == true) {
@@ -437,11 +435,8 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                             _itemCount.description = itemDescription;
                             _itemCount.uom = itemUOM;
                             _itemCount.qty = qtyController.text.trim();
-                            _itemCount.conqty =
-                                (int.parse(qtyController.text.trim()) * convQty)
-                                    .toString();
-                            _itemCount.location =
-                                GlobalVariables.currentBusinessUnit;
+                            _itemCount.conqty = (int.parse(qtyController.text.trim()) * convQty).toString();
+                            _itemCount.location = GlobalVariables.currentBusinessUnit;
                             _itemCount.bu = GlobalVariables.currentDepartment;
                             _itemCount.area = GlobalVariables.currentSection;
                             _itemCount.rackno = GlobalVariables.currentRackDesc;
@@ -449,25 +444,22 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                             _itemCount.dateTimeSaved = dt;
                             _itemCount.empNo = GlobalVariables.logEmpNo;
                             _itemCount.exported = '';
-                            GlobalVariables.countType != 'ANNUAL' &&
-                                GlobalVariables.enableExpiry == true
+                            GlobalVariables.countType != 'ANNUAL' && GlobalVariables.enableExpiry == true
                                 ? _itemCount.expiry = selectedDate.toString()
                                 : _itemCount.expiry = "0000-00-00";
-                            _itemCount.locationid =
-                                GlobalVariables.currentLocationID;
+                            _itemCount.locationid = GlobalVariables.currentLocationID;
                             await _sqfliteDBHelper.insertItemCount(_itemCount);
                             _log.date = dateFormat.format(DateTime.now());
                             _log.time = timeFormat.format(DateTime.now());
                             _log.device =
                             "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-                            _log.user = "USER";
+                            _log.user = "${GlobalVariables.logFullName}[Inventory Clerk]";
                             _log.empid = GlobalVariables.logEmpNo;
                             _log.details =
-                            "[ADD][User add item (barcode: ${barcodeController.text.trim()} description: $itemDescription) with qty of ${qtyController.text.trim()} $itemUOM to rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc})]";
+                            "[ADD][${GlobalVariables.logFullName} add item (barcode: ${barcodeController.text.trim()} description: $itemDescription) with qty of ${qtyController.text.trim()} $itemUOM to rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc})]";
                             await _sqfliteDBHelper.insertLog(_log);
                             myFocusNodeBarcode.requestFocus();
-                            GlobalVariables.prevBarCode =
-                                barcodeController.text.trim();
+                            GlobalVariables.prevBarCode = barcodeController.text.trim();
                             GlobalVariables.prevItemCode = itemCode;
                             GlobalVariables.prevItemDesc = itemDescription;
                             GlobalVariables.prevItemUOM = itemUOM;
@@ -756,14 +748,14 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
           title: new Text("Item not found!"),
           content: new Text("Would you like to add the item to not found list?"),
           actions: <Widget>[
-            new FlatButton(
+            new TextButton(
               child: new Text("Yes"),
               onPressed: () async{
                 await saveNotFoundBarcode(context, _sqfliteDBHelper, units);
                 Navigator.of(context).pop();
               },
             ),
-            new FlatButton(
+            new TextButton  (
               child: new Text("No"),
               onPressed: () {
                 Navigator.of(context).pop();

@@ -240,7 +240,7 @@ class _ViewItemNotFoundScanScreenState
     _log.time = timeFormat.format(DateTime.now());
     _log.device =
         "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-    _log.user = "USER";
+    _log.user = "${GlobalVariables.logFullName}Inventory Clerk[]";
     _log.empid = GlobalVariables.logEmpNo;
     _log.details =
         "[DELETE][Delete item (barcode: ${itemNotFound[index].barcode} unit: ${itemNotFound[index].uom} qty: ${itemNotFound[index].qty})]";

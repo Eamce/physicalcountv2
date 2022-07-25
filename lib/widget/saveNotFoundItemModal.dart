@@ -28,7 +28,6 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
   // var _uom = ["MALE", "FEMALE"];
   var _uom = units;
   var _uomm = [];
-  var barcode_itemcode = ['Barcode','Item Code'];
   late FocusNode _node;
   var selected='';
   units.forEach((element) {
@@ -54,6 +53,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
     _itemNotFound.empno=GlobalVariables.logEmpNo;
     _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
     _itemNotFound.description='Item Code';
+    _itemNotFound.barcode='00000000';
     await db.insertItemNotFound(_itemNotFound);
     myFocusNodeBarcode.requestFocus();
     barcodeController.clear();
@@ -256,7 +256,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
-                          if (barcodeController.text.isNotEmpty && _selectedUom!='' &&
+                          else if (barcodeController.text.isNotEmpty && _selectedUom!='' &&
                               qtyController.text.isNotEmpty) {
                             btnSaveEnabled = true;
                             setModalState(() {});
@@ -288,7 +288,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                           if (GlobalVariables.isAuditLogged == true) {
                             DateFormat dateFormat1 = DateFormat("yyyy-MM-dd hh:mm:ss aaa");
                             String dt = dateFormat1.format(DateTime.now());
-                            _itemNotFound.barcode = barcodeController.text.trim();
+                            _itemNotFound.itemcode = barcodeController.text.trim();
                             _itemNotFound.uom = _selectedUom.trim();
                             _itemNotFound.qty = qtyController.text.trim();
                             _itemNotFound.location = GlobalVariables.currentLocationID;
@@ -300,7 +300,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             _itemNotFound.section=GlobalVariables.currentSection;
                             _itemNotFound.empno=GlobalVariables.logEmpNo;
                             _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
-                            _itemNotFound.description='item code';
+                            _itemNotFound.barcode='00000000';
                             await db.insertItemNotFound(_itemNotFound);
                             myFocusNodeBarcode.requestFocus();
                             barcodeController.clear();

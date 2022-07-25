@@ -130,33 +130,18 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          if (data[index]['locked'] ==
-                                              'false') {
-                                            GlobalVariables.currentLocationID =
-                                                data[index]['location_id'];
-                                            GlobalVariables
-                                                    .currentBusinessUnit =
-                                                data[index]['business_unit'];
-                                            GlobalVariables.currentDepartment =
-                                                data[index]['department'];
-                                            GlobalVariables.currentSection =
-                                                data[index]['section'];
-                                            GlobalVariables.currentRackDesc =
-                                                data[index]['rack_desc'];
-
-                                            var dtls =
-                                                "[LOGIN][Audit scan ID to add item on location (${data[index]['business_unit']}/${data[index]['department']}/${data[index]['section']}/${data[index]['rack_desc']}).]";
-
-                                            GlobalVariables.isAuditLogged =
-                                                false;
-                                            await scanAuditModal(context,
-                                                _sqfliteDBHelper, dtls);
-                                            if (GlobalVariables.isAuditLogged ==
-                                                true) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
+                                          if (data[index]['locked'] == 'false') {
+                                            GlobalVariables.currentLocationID = data[index]['location_id'];
+                                            GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                            GlobalVariables.currentDepartment = data[index]['department'];
+                                            GlobalVariables.currentSection = data[index]['section'];
+                                            GlobalVariables.currentRackDesc = data[index]['rack_desc'];
+                                            var dtls = "[LOGIN][Audit] scan ID to add item on location (${data[index]['business_unit']}/${data[index]['department']}/${data[index]['section']}/${data[index]['rack_desc']}).]";
+                                            GlobalVariables.isAuditLogged = false;
+                                            await scanAuditModal(context, _sqfliteDBHelper, dtls);
+                                            if (GlobalVariables.isAuditLogged == true) {
+                                              Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) =>
                                                         ItemScanningScreen()),
                                               ).then((value) {
                                                 _refreshUserAssignAreaList();
@@ -191,21 +176,13 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          GlobalVariables.currentLocationID =
-                                              data[index]['location_id'];
-                                          GlobalVariables.currentBusinessUnit =
-                                              data[index]['business_unit'];
-                                          GlobalVariables.currentDepartment =
-                                              data[index]['department'];
-                                          GlobalVariables.currentSection =
-                                              data[index]['section'];
-                                          GlobalVariables.currentRackDesc =
-                                              data[index]['rack_desc'];
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
+                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                          GlobalVariables.currentDepartment   = data[index]['department'];
+                                          GlobalVariables.currentSection      = data[index]['section'];
+                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                          Navigator.push(context,
+                                            MaterialPageRoute(builder: (context) =>
                                                     ViewItemScannedListScreen()),
                                           );
                                         },
@@ -224,22 +201,14 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          GlobalVariables.currentLocationID =
-                                              data[index]['location_id'];
-                                          GlobalVariables.currentBusinessUnit =
-                                              data[index]['business_unit'];
-                                          GlobalVariables.currentDepartment =
-                                              data[index]['department'];
-                                          GlobalVariables.currentSection =
-                                              data[index]['section'];
-                                          GlobalVariables.currentRackDesc =
-                                              data[index]['rack_desc'];
-
+                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                          GlobalVariables.currentDepartment   = data[index]['department'];
+                                          GlobalVariables.currentSection      = data[index]['section'];
+                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ViewItemNotFoundScanScreen()),
+                                            MaterialPageRoute(builder: (context) => ViewItemNotFoundScanScreen()),
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -257,26 +226,17 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
-                                          GlobalVariables.currentLocationID =
-                                              data[index]['location_id'];
-                                          GlobalVariables.currentBusinessUnit =
-                                              data[index]['business_unit'];
-                                          GlobalVariables.currentDepartment =
-                                              data[index]['department'];
-                                          GlobalVariables.currentSection =
-                                              data[index]['section'];
-                                          GlobalVariables.currentRackDesc =
-                                              data[index]['rack_desc'];
-
-                                          var dtls = data[index]['locked'] ==
-                                                  'true'
+                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                          GlobalVariables.currentDepartment   = data[index]['department'];
+                                          GlobalVariables.currentSection      = data[index]['section'];
+                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                          var dtls = data[index]['locked'] == 'true'
                                               ? "[LOCK][Audit Lock Rack (${data[index]['business_unit']}/${data[index]['department']}/${data[index]['section']}/${data[index]['rack_desc']})]"
                                               : "[LOCK][Audit Unlock Rack (${data[index]['business_unit']}/${data[index]['department']}/${data[index]['section']}/${data[index]['rack_desc']})]";
                                           GlobalVariables.isAuditLogged = false;
-                                          await scanAuditModal(
-                                              context, _sqfliteDBHelper, dtls);
-                                          if (GlobalVariables.isAuditLogged ==
-                                              true) {
+                                          await scanAuditModal(context, _sqfliteDBHelper, dtls);
+                                          if (GlobalVariables.isAuditLogged == true) {
                                             data[index]['locked'].toString() ==
                                                     'true'
                                                 ? _lockUnlockLocation(
@@ -286,16 +246,13 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           }
                                         },
                                         style: data[index]['locked'] == 'true'
-                                            ? ElevatedButton.styleFrom(
-                                                primary: Colors.red)
-                                            : ElevatedButton.styleFrom(
-                                                primary: Colors.red[200]),
+                                            ? ElevatedButton.styleFrom(primary: Colors.red)
+                                            : ElevatedButton.styleFrom(primary: Colors.red[200]),
                                         child: Row(
                                           children: [
                                             Icon(data[index]['locked'] == 'true'
                                                 ? CupertinoIcons.lock_fill
-                                                : CupertinoIcons
-                                                    .lock_open_fill),
+                                                : CupertinoIcons.lock_open_fill),
                                             Text(data[index]['locked'] == 'true'
                                                 ? "Locked"
                                                 : "Unlock"),
@@ -315,18 +272,11 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           //     prefss.getString(
                                           //             'saveAuditSignature') ??
                                           //         '';
-
-                                          GlobalVariables.currentLocationID =
-                                              data[index]['location_id'];
-                                          GlobalVariables.currentBusinessUnit =
-                                              data[index]['business_unit'];
-                                          GlobalVariables.currentDepartment =
-                                              data[index]['department'];
-                                          GlobalVariables.currentSection =
-                                              data[index]['section'];
-                                          GlobalVariables.currentRackDesc =
-                                              data[index]['rack_desc'];
-
+                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                          GlobalVariables.currentDepartment   = data[index]['department'];
+                                          GlobalVariables.currentSection      = data[index]['section'];
+                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -338,8 +288,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                             primary: Colors.green),
                                         child: Row(
                                           children: [
-                                            Icon(CupertinoIcons
-                                                .arrow_2_circlepath),
+                                            Icon(CupertinoIcons.arrow_2_circlepath),
                                             Text("Sync"),
                                           ],
                                         ),
@@ -368,7 +317,6 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
       "locked = '" + value.toString() + "' , done = '" + done.toString() + "'",
       "emp_no = '${user[0]['emp_no']}' AND location_id = '${GlobalVariables.currentLocationID}'",
     );
-
     _refreshUserAssignAreaList();
   }
 

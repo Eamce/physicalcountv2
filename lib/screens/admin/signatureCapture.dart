@@ -119,8 +119,7 @@ class _SignatureCaptureState extends State<SignatureCapture> {
                             _selectedIndex = index;
                             _selectedUser = _locations[index]["user"];
                             _selectedAudit = _locations[index]["audit"];
-                            _selectedLocation =
-                                _locations[index]["location_id"];
+                            _selectedLocation = _locations[index]["location_id"];
                             if (mounted) setState(() {});
                           },
                         );
@@ -133,7 +132,7 @@ class _SignatureCaptureState extends State<SignatureCapture> {
               ? Row(
                   children: [
                     Text(
-                      "  User Signature",
+                      "User Signature",
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
@@ -159,7 +158,10 @@ class _SignatureCaptureState extends State<SignatureCapture> {
                         // maximumStrokeWidth: 4.0,
                       ),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey))))
+                        // borderRadius: ,
+                          border: Border.all(color: Colors.grey)
+                          // border: Border.all(color: Colors.grey)
+                      )))
               : SizedBox(),
           _showPad
               ? Row(
@@ -193,7 +195,8 @@ class _SignatureCaptureState extends State<SignatureCapture> {
               : SizedBox(),
           _showPad
               ? Padding(
-                  padding: EdgeInsets.only(right: 8, left: 8),
+                   padding: EdgeInsets.only(right: 8, left: 8),
+                  //padding: EdgeInsets.fromLTRB(5, 0, 5, 70),
                   child: Container(
                       child: SfSignaturePad(
                           key: signatureAuditGlobalKey,
@@ -201,8 +204,13 @@ class _SignatureCaptureState extends State<SignatureCapture> {
                           strokeColor: Colors.black,
                           minimumStrokeWidth: 3.0,
                           maximumStrokeWidth: 6.0),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey))))
+                          // height: 100,
+                          // width: 100,
+                          decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                             //   borderRadius: BorderRadius.all(Radius.circular(100)
+                             // ),
+                          )))
               : SizedBox(),
           _showPad
               ? Row(
@@ -232,7 +240,7 @@ class _SignatureCaptureState extends State<SignatureCapture> {
                             color: Colors.white,
                           ),
                           Text(
-                            " Upload",
+                            "Upload",
                             style: TextStyle(color: Colors.white, fontSize: 25),
                           ),
                         ],

@@ -6,7 +6,6 @@ import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/values/bodySize.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
-
 scanAuditModal(BuildContext context, SqfliteDBHelper db, String details) {
   late FocusNode myFocusNodeAuditEmpNo;
   myFocusNodeAuditEmpNo = FocusNode();
@@ -17,7 +16,7 @@ scanAuditModal(BuildContext context, SqfliteDBHelper db, String details) {
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
   bool obscureAuditENumber = true;
   return showModalBottomSheet(
-    isDismissible: false,
+    // isDismissible: false,
     isScrollControlled: true,
     context: context,
     backgroundColor: Colors.transparent,
@@ -99,15 +98,15 @@ scanAuditModal(BuildContext context, SqfliteDBHelper db, String details) {
                         var ls = await db.selectAuditWhere(
                             auditempnoController.text.trim(),
                             GlobalVariables.currentLocationID);
-
+                        print('LOCATION ID:  ${GlobalVariables.currentLocationID} ');
+                        GlobalVariables.logAuditName= ls[0]['name'];
                         if (ls.length > 0) {
                           //logs
-                          _log.date = dateFormat.format(DateTime.now());
-                          _log.time = timeFormat.format(DateTime.now());
-                          _log.device =
-                              "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-                          _log.user = "[Audit] ";
-                          _log.empid = auditempnoController.text.trim();
+                          _log.date    = dateFormat.format(DateTime.now());
+                          _log.time    = timeFormat.format(DateTime.now());
+                          _log.device  = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+                          _log.user    = "${GlobalVariables.logAuditName} [AUDIT] ";
+                          _log.empid   = auditempnoController.text.trim();
                           _log.details = details.toString();
                           await db.insertLog(_log);
                           GlobalVariables.isAuditLogged = true;

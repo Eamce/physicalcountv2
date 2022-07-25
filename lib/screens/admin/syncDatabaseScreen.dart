@@ -58,9 +58,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
-
   bool checkingNetwork = false;
-
   List userMasterfileData = [];
   List auditMasterfileData = [];
   List locationMasterfileData = [];
@@ -393,7 +391,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       locationMasterfileCount =
           locationMasterfileCount + locationMasterfileData.length;
       if (mounted) setState(() {});
-
       tables[2]['status'] = "done";
       if (mounted) setState(() {});
       _log.date = dateFormat.format(DateTime.now());

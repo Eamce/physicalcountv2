@@ -22,21 +22,26 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   late SqfliteDBHelper _sqfliteDBHelper;
 
   List units = [];
+  List _notSyncNF =[];
+  List _itemSearched=[];
   List<ItemNotFound> itemNotFound = [];
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
-
   bool _loading = true;
+  bool _listStat = false;
 
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
     getUnits();
-
     super.initState();
+  }
+
+  Future _onSearch(value) async{
+    _listStat = true;
+    _itemSearched =
   }
 
   @override
@@ -67,17 +72,31 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                 ),
               ),
             ],
+
           ),
           actions: [
             IconButton(
-              icon: Icon(CupertinoIcons.plus),
+              icon: Icon(CupertinoIcons.search),
               color: Colors.red,
               onPressed: () async {
-                await saveNotFoundItemModal(context, _sqfliteDBHelper, units);
                 _refreshItemList();
+                showDialog(
+                    context: context, builder: (BuildContext context){
+                      return CupertinoAlertDialog( title: new Text("Search Item"),
+                      content: new CupertinoTextField(
+                        onSubmitted: (value){
+                          Navigator.of(context).pop();
+                        },
+                        keyboardType: TextInputType.number,
+                        // controller: ,
+                      ),
+                      );
+                },
+                );
               },
             ),
           ],
+
         ),
         body: Column(
           children: [
@@ -109,8 +128,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             TextSpan(
-                                                text:
-                                                    "${itemNotFound[index].dateTimeCreated!}",
+                                                text: "${itemNotFound[index].dateTimeCreated!}",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -202,7 +220,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                       await updateNotFoundItemModal(
                                                         context,
                                                         _sqfliteDBHelper,
-                                                        "[LOGIN][Audit scan ID to update scanned item quantity.]",
+                                                        "[Update][Audit scan ID to update scanned item quantity.]",
                                                         itemNotFound[index].id!.toString(),
                                                         itemNotFound[index].barcode!,
                                                         itemNotFound[index].uom!,
@@ -246,28 +264,15 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                   customLogicalModal(
                                                     context,
                                                     Text(
-                                                        "Are you sure you want to delete this item?"),
-                                                    () =>
-                                                        Navigator.pop(context),
+                                                        "Are you sure you want to delete this item?"), () => Navigator.pop(context),
                                                     () async {
                                                       Navigator.pop(context);
-                                                      var dtls =
-                                                          "[LOGIN][Audit scan ID to delete not found item.]";
-                                                      GlobalVariables
-                                                              .isAuditLogged =
-                                                          false;
-                                                      await scanAuditModal(
-                                                          context,
-                                                          _sqfliteDBHelper,
-                                                          dtls);
-                                                      if (GlobalVariables
-                                                              .isAuditLogged ==
-                                                          true) {
+                                                      var dtls = "[LOGIN][Audit scan ID to delete not found item.]";
+                                                      GlobalVariables.isAuditLogged = false;
+                                                      await scanAuditModal(context, _sqfliteDBHelper, dtls);
+                                                      if (GlobalVariables.isAuditLogged == true) {
                                                         //delte code here
-                                                        delete(
-                                                            itemNotFound[index]
-                                                                .id!,
-                                                            index);
+                                                        delete(itemNotFound[index].id!, index);
                                                       }
                                                     },
                                                   );
@@ -294,14 +299,12 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                             itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill
                                                 : CupertinoIcons.info_circle_fill,
                                             color:
-                                                itemNotFound[index].exported ==
-                                                        'EXPORTED'
+                                                itemNotFound[index].exported == 'EXPORTED'
                                                     ? Colors.green
                                                     : Colors.red,
                                           ),
                                           Text(
-                                              itemNotFound[index].exported ==
-                                                      'EXPORTED'
+                                              itemNotFound[index].exported == 'EXPORTED'
                                                   ? "Synced to Server Database"
                                                   : "Not synced to Server Database",
                                               style: TextStyle(
@@ -336,6 +339,15 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                         ),
                       ),
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.white,
+          onPressed: () async {
+            await saveNotFoundItemModal(context, _sqfliteDBHelper, units);
+            _refreshItemList();
+          },
+          child: Icon(CupertinoIcons.plus),
+          foregroundColor: Colors.red,
         ),
       ),
     );

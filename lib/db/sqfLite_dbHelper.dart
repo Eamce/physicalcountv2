@@ -134,7 +134,8 @@ class SqfliteDBHelper {
         ${ItemNotFound.colsection} TEXT NOT NULL,
         ${ItemNotFound.colempno} TEXT NOT NULL,
         ${ItemNotFound.colrack} TEXT NOT NULL,
-        ${ItemNotFound.coldescription} TEXT NOT NULL
+        ${ItemNotFound.coldescription} TEXT NOT NULL,
+        ${ItemNotFound.colitemcode} TEXT NOT NULL
       )
     ''');
 //--ITEM NOT FOUND--//
@@ -294,12 +295,9 @@ class SqfliteDBHelper {
   Future selectAuditWhere(String id, String locationid) async {
     var db = await database;
     // print("SELECT * FROM ${Audit.tblAudit} WHERE $where");
-
     // return db.rawQuery("SELECT * FROM ${Audit.tblAudit} WHERE $where");
-    //
     List x = await db.rawQuery(
         "SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
-
     if (x.length > 0) {
       return db.rawQuery(
           "SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
@@ -356,6 +354,11 @@ class SqfliteDBHelper {
     //     "SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' ",
     //     null));
      return client.rawQuery("SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' ", null);
+  }
+
+  Future searchNfItems(value)async{
+    var client = await database;
+    return client.rawQuery("SELECT * FROM");
   }
 
   Future validateBarcode(barcode)async{

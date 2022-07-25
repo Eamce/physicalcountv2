@@ -307,6 +307,7 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                             String dt = dateFormat1.format(DateTime.now());
                             _itemNotFound.barcode =
                                 barcodeController.text.trim();
+                            _itemNotFound.itemcode='00000';
                             _itemNotFound.uom = _selectedUom.trim();
                             _itemNotFound.qty = qtyController.text.trim();
                             _itemNotFound.location =
