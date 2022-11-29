@@ -45,6 +45,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
   DateFormat timeFormat = DateFormat("HH:mm:ss");
   List<ItemCount> _items = [];
   DateTime selectedDate = DateTime.now();
+  final validCharacters = RegExp(r'^[0-9]+$');
   bool _loading = true;
   // DateTime selectedDate =
   //     DateTime.parse("0000-00-00"); //-0001-11-30 00:00:00.000
@@ -209,7 +210,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                   style: TextStyle(fontSize: 50),
                   textAlign: TextAlign.center,
                   controller: barcodeController,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.phone,
                   decoration: InputDecoration(
                     contentPadding: EdgeInsets.all(8.0), //here your padding
                     border: OutlineInputBorder(
@@ -326,7 +327,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                       child: TextFormField(
                         controller: qtyController,
                         focusNode: myFocusNodeQty,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.phone,
                         style: TextStyle(fontSize: 50),
                         decoration: InputDecoration(
                           contentPadding:
@@ -335,10 +336,12 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               borderRadius: BorderRadius.circular(3)),
                         ),
                         onChanged: (value) {
+                          print(validCharacters.hasMatch(value));
                           if(value.isEmpty){
                             btnSaveEnabled=false;
                           }
-                          if(value.contains('.') || value.characters.first=='0'){
+                          //RegExp(r'^[a-zA-Z0-9_\-=@,\.;]+$')
+                          if(value.contains('.') || value.characters.first=='0' || validCharacters.hasMatch(value)==false){
                             qtyController.clear();
                             btnSaveEnabled = false;
                             if (mounted) setState(() {});
@@ -427,8 +430,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                           if (GlobalVariables.isAuditLogged == true) {
                             //     DateFormat dateFormat1 =
                             //     DateFormat("yyyy-MM-dd hh:mm:ss aaa");
-                            DateFormat dateFormat1 =
-                            DateFormat("yyyy-MM-dd HH:mm:ss");
+                            DateFormat dateFormat1 = DateFormat("yyyy-MM-dd HH:mm:ss");
                             String dt = dateFormat1.format(DateTime.now());
                             _itemCount.barcode = barcodeController.text.trim();
                             _itemCount.itemcode = itemCode;
@@ -786,6 +788,21 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
    //   return Future<bool>.value(false);
     }
   }
+
+  bool validateCredentials(value){
+    RegExp _regExp = RegExp(r'^[0-9]+$');
+    if(_regExp.hasMatch(value)){
+      print('TRUE NI SIYA');
+      print(_regExp.hasMatch(value));
+      return true;
+    }
+    else{
+      print('FALSE NI SIYA');
+      return false;
+    }
+
+  }
+
 
 //   searchInputtedItem(String value) async {
 //     print(GlobalVariables.byCategory);

@@ -296,11 +296,9 @@ class SqfliteDBHelper {
     var db = await database;
     // print("SELECT * FROM ${Audit.tblAudit} WHERE $where");
     // return db.rawQuery("SELECT * FROM ${Audit.tblAudit} WHERE $where");
-    List x = await db.rawQuery(
-        "SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
+    List x = await db.rawQuery("SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
     if (x.length > 0) {
-      return db.rawQuery(
-          "SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
+      return db.rawQuery("SELECT * FROM ${Audit.tblAudit} WHERE emp_no='$id' AND location_id='$locationid'");
     } else {
       var user = int.parse(id) * 1;
       return db.rawQuery(
@@ -358,7 +356,12 @@ class SqfliteDBHelper {
 
   Future searchNfItems(value)async{
     var client = await database;
-    return client.rawQuery("SELECT * FROM");
+    return client.rawQuery("SELECT * FROM itemnotfound WHERE barcode LIKE '%$value%' AND exported = 'false' ", null);
+  }
+
+  Future searchNFItemsbyItemCode(value)async{
+    var client = await database;
+    return client.rawQuery("SELECT * FROM itemnotfound WHERE itemcode LIKE '%$value%' AND exported ='' ",null);
   }
 
   Future validateBarcode(barcode)async{
@@ -392,8 +395,7 @@ class SqfliteDBHelper {
 
   Future selectItemWhereItemcode(String itemcode) async {
     var db = await database;
-    return db
-        .rawQuery("SELECT * FROM ${Item.tblItem} WHERE barcode='$itemcode'");
+    return db.rawQuery("SELECT * FROM ${Item.tblItem} WHERE barcode='$itemcode'");
   }
 //-----------------ITEM-----------------//
 
@@ -461,8 +463,7 @@ class SqfliteDBHelper {
 
   Future<List<ItemNotFound>> fetchItemNotFoundWhere(String where) async {
     Database db = await database;
-    List<Map<String, Object?>> itemNotFound =
-        await db.query(ItemNotFound.tblItemNotFound, where: where);
+    List<Map<String, Object?>> itemNotFound = await db.query(ItemNotFound.tblItemNotFound, where: where);
     return itemNotFound.length == 0
         ? []
         : itemNotFound.map((e) => ItemNotFound.fromMap(e)).toList();

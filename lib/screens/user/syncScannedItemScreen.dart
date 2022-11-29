@@ -184,13 +184,14 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                       key: signatureUserGlobalKey,
                       backgroundColor: Colors.white,
                       strokeColor: Colors.black,
-                      minimumStrokeWidth: 3.0,
-                      maximumStrokeWidth: 6.0,
+                      minimumStrokeWidth: 1.0,
+                      maximumStrokeWidth: 4.0,
                       // minimumStrokeWidth: 1.0,
                       // maximumStrokeWidth: 4.0,
                     ),
-                    // height: 100,
-                    // width: 200,
+
+                    height: 120,
+                    width: 270,
                     decoration:
                         BoxDecoration(
                             border: Border.all(color: Colors.grey)))),
@@ -242,9 +243,11 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                         key: signatureAuditGlobalKey,
                         backgroundColor: Colors.white,
                         strokeColor: Colors.black,
-                        minimumStrokeWidth: 3.0,
-                        maximumStrokeWidth: 6.0),
-                    decoration:
+                        minimumStrokeWidth: 1.0,
+                        maximumStrokeWidth: 4.0),
+                        height: 120,
+                        width: 270,
+                        decoration:
                         BoxDecoration(border: Border.all(color: Colors.grey)))),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: Colors.black,
                       style: TextStyle(color: Colors.black, fontSize: 25),
                       controller: empnoController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.black),
@@ -131,10 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (mounted)
                           setState(() {
                             empnoController.text.isNotEmpty &&
-                                    emppinController.text.isNotEmpty
+                                emppinController.text.isNotEmpty
                                 ? btnEnabled = true
                                 : btnEnabled = false;
                           });
+
                       },
                       onSubmitted: (value) {
                         myFocusNodeEmpPin.requestFocus();
@@ -150,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: Colors.black,
                       style: TextStyle(color: Colors.black, fontSize: 25),
                       controller: emppinController,
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.phone,
                       decoration: InputDecoration(
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.black),
@@ -238,6 +239,21 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+       bool  validateCredentials(value){
+          RegExp _regExp = RegExp(r'^[0-9]+$');
+          if(_regExp.hasMatch(value)){
+            print('TRUE NI SIYA');
+            print(_regExp.hasMatch(value));
+            return true;
+          }
+          else{
+            print('FALSE NI SIYA');
+            return false;
+          }
+
+        }
+
   onPressLogin() async {
     var ls = await _sqfliteDBHelper.selectUserWhere(empnoController.text.trim(), emppinController.text.trim());
     if (btnEnabled) {
@@ -261,12 +277,15 @@ class _LoginScreenState extends State<LoginScreen> {
         if (ls.isNotEmpty) {
           String locationId=ls[0]['location_id'];
           var filter = await _sqfliteDBHelper.selectFilterWhere(locationId);
-          print(filter);
+          print('LOCATION: $locationId');
+          print('FILTER: $filter');
+         // print(filter[0]['byCategory']);
           GlobalVariables.byCategory    = filter[0]['byCategory'] == 'True' ? true : false;
           GlobalVariables.categories    = filter[0]['categoryName'];
           GlobalVariables.byVendor      = filter[0]['byVendor'] == 'True' ? true : false;
           GlobalVariables.vendors       = filter[0]['vendorName'];
           GlobalVariables.countType     = filter[0]['ctype'];
+          GlobalVariables.currentLocationID = locationId;
           GlobalVariables.enableExpiry  = false;
           GlobalVariables.prevBarCode   = "Unknown";
           GlobalVariables.prevItemCode  = "Unknown";

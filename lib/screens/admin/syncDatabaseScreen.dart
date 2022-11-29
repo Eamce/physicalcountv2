@@ -10,7 +10,6 @@ import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 
 class SyncDatabaseScreen extends StatefulWidget {
-
   @override
   _SyncDatabaseScreenState createState() => _SyncDatabaseScreenState();
 }
@@ -70,13 +69,11 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
     animationController = new AnimationController(
       vsync: this,
       duration: new Duration(seconds: 7),
     );
     animationController.repeat();
-
     super.initState();
   }
 
@@ -280,12 +277,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
                         Text("${GlobalVariables.httpError}"));
                   } else {
                     continueSync();
-                    // print(tables[0]['truncate']);
-                    // if (tables[0]['truncate'] == true) {
-                    //   print("truncate");
-                    // } else {
-                    //   print("not truncate");
-                    // }
                   }
                 },
               ),
@@ -307,8 +298,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         await _sqfliteDBHelper.deleteUserAll();
         _log.date = dateFormat.format(DateTime.now());
         _log.time = timeFormat.format(DateTime.now());
-        _log.device =
-            "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+        _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
         _log.user = "ADMIN";
         _log.empid = "ADMIN";
         _log.details = "[SYNC][User Masterfile Truncate]";

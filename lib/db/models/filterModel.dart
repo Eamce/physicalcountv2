@@ -27,13 +27,13 @@ class Filter {
   });
 
   Filter.fromMap(Map<String, dynamic> map) {
-    id = map[colId];
-    bycategory = map[colbyCategory];
-    categoryname = map[colcategoryName];
-    byvendor = map[colbyVendor];
-    vendorname = map[colvendorName];
-    type = map[coltype];
-    location_id = map[collocation];
+    id            = map[colId];
+    bycategory    = map[colbyCategory];
+    categoryname  = map[colcategoryName];
+    byvendor      = map[colbyVendor];
+    vendorname    = map[colvendorName];
+    type          = map[coltype];
+    location_id   = map[collocation];
   }
 
   Map<String, dynamic> toMap() {

@@ -20,10 +20,11 @@ class ItemNotFoundScanScreen extends StatefulWidget {
 
 class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   late SqfliteDBHelper _sqfliteDBHelper;
-
+  final _textController = TextEditingController();
   List units = [];
-  List _notSyncNF =[];
-  List _itemSearched=[];
+  List notSyncNFItems =[];
+  List _notSyncNF = [];
+  List nfItemSearched=[];
   List<ItemNotFound> itemNotFound = [];
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -41,7 +42,31 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
 
   Future _onSearch(value) async{
     _listStat = true;
-    _itemSearched =
+    List nfItemSearched = await _sqfliteDBHelper.searchNfItems(value.toString().trim());
+    notSyncNFItems = nfItemSearched;
+    print('NOT FOUND: ${notSyncNFItems.length} ');
+    print("VALUE : $value");
+      if(notSyncNFItems.isEmpty){
+        showDialog(context: context, builder: (BuildContext context){
+          return CupertinoAlertDialog(
+            title: new Text("Item not found!"),
+            actions: <Widget>[
+              new TextButton(
+                child: new Text("Close"),
+                onPressed: (){
+                  _refreshItemList();
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        }
+        );
+      }else{
+        setState((){
+          _notSyncNF = nfItemSearched;
+        });
+      }
   }
 
   @override
@@ -85,11 +110,26 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                       return CupertinoAlertDialog( title: new Text("Search Item"),
                       content: new CupertinoTextField(
                         onSubmitted: (value){
+                          _onSearch(value);
                           Navigator.of(context).pop();
+                          _textController.clear();
                         },
                         keyboardType: TextInputType.number,
-                        // controller: ,
+                         controller: _textController,
+                         autofocus: true,
                       ),
+                        actions:<Widget> [new TextButton(
+                            child: new Text("Search"),
+                            onPressed: (){
+                            _onSearch(_textController.text);
+                            Navigator.of(context).pop();
+                            _textController.clear();
+                            }
+                        ),
+                        new TextButton(onPressed: (){
+                          Navigator.of(context).pop();
+                        }, child: new Text("Close"))
+                        ],
                       );
                 },
                 );
@@ -105,8 +145,10 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                 : itemNotFound.length > 0
                     ? Expanded(
                         child: Scrollbar(
-                          child: ListView.builder(
-                            itemCount: itemNotFound.length,
+//=========================================S E A R C H  N O T  F O U N D  I T E M S================================================//
+                          child: _listStat == true
+                          ? ListView.builder(
+                            itemCount: _notSyncNF.length,
                             itemBuilder: (context, index) {
                               return Padding(
                                 padding: const EdgeInsets.only(
@@ -128,7 +170,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             TextSpan(
-                                                text: "${itemNotFound[index].dateTimeCreated!}",
+                                                text: "${_notSyncNF[index]['datetimecreated']}",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -139,15 +181,14 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
-                                                text: "${itemNotFound[index].description}: ",
+                                                text: "${_notSyncNF[index]['description']}: ",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.blue,
                                                     fontWeight:
                                                         FontWeight.bold)),
                                             TextSpan(
-                                                text:
-                                                    "${itemNotFound[index].barcode}",
+                                                text: "${_notSyncNF[index]['barcode']}",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -166,7 +207,221 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                         FontWeight.bold)),
                                             TextSpan(
                                                 text:
-                                                    "${itemNotFound[index].uom}",
+                                                    "${_notSyncNF[index]['uom']}",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black))
+                                          ],
+                                        ),
+                                      ),
+                                      RichText( text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                text: "Quantity: ",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.blue,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                            TextSpan(
+                                                text:
+                                                    "${_notSyncNF[index]['qty']}",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black))
+                                          ],
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Spacer(),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                  primary: Colors.yellow[700]),
+                                              child: Row(
+                                                children: [
+                                                  Icon(CupertinoIcons.pencil),
+                                                  Text("Edit"),
+                                                ],
+                                              ),
+                                              onPressed: () async {
+                                                if (_notSyncNF[index]['exported']==
+                                                    'false') {
+                                                  customLogicalModal(
+                                                    context,
+                                                    Text("Are you sure you want to edit this item?"),
+                                                    () => Navigator.pop(context),
+                                                    () async {
+                                                      Navigator.pop(context);
+                                                      await updateNotFoundItemModal(
+                                                        context,
+                                                        _sqfliteDBHelper,
+                                                        "[Update][Audit scan ID to update scanned item quantity.]",
+                                                        _notSyncNF[index]['id'].toString(),
+                                                        _notSyncNF[index]['barcode'].toString(),
+                                                        _notSyncNF[index]['uom'].toString(),
+                                                        _notSyncNF[index]['qty'].toString(),
+                                                        units,
+                                                      );
+                                                      _refreshItemList();
+                                                    },
+                                                  );
+                                                } else {
+                                                  instantMsgModal(
+                                                      context,
+                                                      Icon(
+                                                        CupertinoIcons
+                                                            .exclamationmark_circle,
+                                                        color: Colors.red,
+                                                        size: 40,
+                                                      ),
+                                                      Text(
+                                                          "This item is already synced, you cannot edit synced item."));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                 primary: Colors.red),
+                                              child: Row(
+                                                children: [
+                                                  Icon(CupertinoIcons.trash),
+                                                  Text("Delete"),
+                                                ],
+                                              ),
+                                              onPressed: () async {
+                                                if (_notSyncNF[index]['exported']==
+                                                    'false') {
+                                                  customLogicalModal(
+                                                    context,
+                                                    Text(
+                                                        "Are you sure you want to delete this item?"), () => Navigator.pop(context),
+                                                    () async {
+                                                      Navigator.pop(context);
+                                                      var dtls = "[LOGIN][Audit scan ID to delete not found item.]";
+                                                      GlobalVariables.isAuditLogged = false;
+                                                      await scanAuditModal(context, _sqfliteDBHelper, dtls);
+                                                      if (GlobalVariables.isAuditLogged == true) {
+                                                        //delte code here
+                                                        delete(_notSyncNF[index]['id'], index);
+                                                      }
+                                                    },
+                                                  );
+                                                } else {
+                                                  instantMsgModal(
+                                                      context,
+                                                      Icon(
+                                                        CupertinoIcons
+                                                            .exclamationmark_circle,
+                                                        color: Colors.red,
+                                                        size: 40,
+                                                      ),
+                                                      Text("This item is already synced, you cannot remove synced item."));
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Spacer(),
+                                          Icon(
+                                            _notSyncNF[index]['exported'] == 'true' ? CupertinoIcons.checkmark_alt_circle_fill
+                                                : CupertinoIcons.info_circle_fill,
+                                            color:
+                                            _notSyncNF[index]['exported'] == 'true'
+                                                ? Colors.green
+                                                    : Colors.red,
+                                          ),
+                                          Text(
+                                              _notSyncNF[index]['exported'] == 'true'
+                                                  ? "Synced to Server Database"
+                                                  : "Not synced to Server Database",
+                                              style: TextStyle(
+                                                   fontSize: 15,
+                                                  color: Colors.black))
+                                        ],
+                                      ),
+                                      SizedBox(height: 5),
+                                      Divider(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+  //=============================================E N D =========================================================================================//
+
+                        : ListView.builder(
+                          itemCount: itemNotFound.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20.0, right: 20.0),
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                text: "Datetime Scanned: ",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.blue,
+                                                    fontWeight:
+                                                    FontWeight.bold)),
+                                            TextSpan(
+                                                text: "${itemNotFound[index].dateTimeCreated!}",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black))
+                                          ],
+                                        ),
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                text: "${itemNotFound[index].description}: ",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.blue,
+                                                    fontWeight:
+                                                    FontWeight.bold)),
+                                            TextSpan(
+                                                text:
+                                                "${itemNotFound[index].barcode}",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.black))
+                                          ],
+                                        ),
+                                      ),
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                text: "Unit of Measure: ",
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.blue,
+                                                    fontWeight:
+                                                    FontWeight.bold)),
+                                            TextSpan(
+                                                text:
+                                                "${itemNotFound[index].uom}",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -182,10 +437,10 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     fontSize: 15,
                                                     color: Colors.blue,
                                                     fontWeight:
-                                                        FontWeight.bold)),
+                                                    FontWeight.bold)),
                                             TextSpan(
                                                 text:
-                                                    "${itemNotFound[index].qty}",
+                                                "${itemNotFound[index].qty}",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -209,13 +464,13 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                               ),
                                               onPressed: () async {
                                                 if (itemNotFound[index]
-                                                        .exported !=
+                                                    .exported !=
                                                     'EXPORTED') {
                                                   customLogicalModal(
                                                     context,
                                                     Text("Are you sure you want to edit this item?"),
-                                                    () => Navigator.pop(context),
-                                                    () async {
+                                                        () => Navigator.pop(context),
+                                                        () async {
                                                       Navigator.pop(context);
                                                       await updateNotFoundItemModal(
                                                         context,
@@ -250,7 +505,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                 right: 8.0),
                                             child: ElevatedButton(
                                               style: ElevatedButton.styleFrom(
-                                                 primary: Colors.red),
+                                                  primary: Colors.red),
                                               child: Row(
                                                 children: [
                                                   Icon(CupertinoIcons.trash),
@@ -259,13 +514,13 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                               ),
                                               onPressed: () async {
                                                 if (itemNotFound[index]
-                                                        .exported !=
+                                                    .exported !=
                                                     'EXPORTED') {
                                                   customLogicalModal(
                                                     context,
                                                     Text(
                                                         "Are you sure you want to delete this item?"), () => Navigator.pop(context),
-                                                    () async {
+                                                        () async {
                                                       Navigator.pop(context);
                                                       var dtls = "[LOGIN][Audit scan ID to delete not found item.]";
                                                       GlobalVariables.isAuditLogged = false;
@@ -299,16 +554,16 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                             itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill
                                                 : CupertinoIcons.info_circle_fill,
                                             color:
-                                                itemNotFound[index].exported == 'EXPORTED'
-                                                    ? Colors.green
-                                                    : Colors.red,
+                                            itemNotFound[index].exported == 'EXPORTED'
+                                                ? Colors.green
+                                                : Colors.red,
                                           ),
                                           Text(
                                               itemNotFound[index].exported == 'EXPORTED'
                                                   ? "Synced to Server Database"
                                                   : "Not synced to Server Database",
                                               style: TextStyle(
-                                                   fontSize: 15,
+                                                  fontSize: 15,
                                                   color: Colors.black))
                                         ],
                                       ),

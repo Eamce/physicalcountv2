@@ -151,21 +151,18 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                             instantMsgModal(
                                                 context,
                                                 Icon(
-                                                  CupertinoIcons
-                                                      .exclamationmark_circle,
+                                                  CupertinoIcons.exclamationmark_circle,
                                                   color: Colors.red,
                                                   size: 40,
                                                 ),
-                                                Text(
-                                                    "This location is locked."));
+                                                Text("This location is locked."));
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
                                             primary: Colors.blue),
                                         child: Row(
                                           children: [
-                                            Icon(CupertinoIcons
-                                                .barcode_viewfinder),
+                                            Icon(CupertinoIcons.barcode_viewfinder),
                                             Text("Start scan"),
                                           ],
                                         ),
@@ -197,8 +194,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                       ),
                                     ),
                                     Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                      padding: const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
                                           GlobalVariables.currentLocationID   = data[index]['location_id'];
@@ -223,7 +219,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                     ),
                                     Padding(
                                       padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                      const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
                                           GlobalVariables.currentLocationID   = data[index]['location_id'];
@@ -310,7 +306,6 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
       ),
     );
   }
-
   Future _lockUnlockLocation(int index, bool value, bool done) async {
     var user = await _sqfliteDBHelper.selectU(GlobalVariables.logEmpNo);
     await await _sqfliteDBHelper.updateUserAssignAreaWhere(
