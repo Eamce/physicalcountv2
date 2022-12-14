@@ -141,15 +141,26 @@ class SqfliteDBHelper {
 //--ITEM NOT FOUND--//
 
 //--FILTERS TABLE--//
+//     await db.execute('''
+//       CREATE TABLE ${Filter.tblFilter}(
+//         ${Filter.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+//         ${Filter.colbyCategory} TEXT NOT NULL,
+//         ${Filter.colcategoryName} TEXT NOT NULL,
+//         ${Filter.colbyVendor} TEXT NOT NULL,
+//         ${Filter.colvendorName} TEXT NOT NULL,
+//         ${Filter.coltype} TEXT NOT NULL,
+//         ${Filter.collocation} TEXT NOT NULL
+//       )
+//     ''');
     await db.execute('''
       CREATE TABLE ${Filter.tblFilter}(
         ${Filter.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${Filter.colbyCategory} TEXT NOT NULL,
-        ${Filter.colcategoryName} TEXT NOT NULL,
-        ${Filter.colbyVendor} TEXT NOT NULL,
-        ${Filter.colvendorName} TEXT NOT NULL,
-        ${Filter.coltype} TEXT NOT NULL,
-        ${Filter.collocation} TEXT NOT NULL
+        ${Filter.colbyCategory} TEXT,
+        ${Filter.colcategoryName} TEXT,
+        ${Filter.colbyVendor} TEXT,
+        ${Filter.colvendorName} TEXT,
+        ${Filter.coltype} TEXT,
+        ${Filter.collocation} TEXT
       )
     ''');
 //--FILTERS TABLE--//

@@ -12,7 +12,6 @@ import 'package:physicalcountv2/widget/customLogicalModal.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({Key? key}) : super(key: key);
-
   @override
   _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
 }

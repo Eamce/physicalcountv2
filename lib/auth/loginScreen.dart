@@ -60,6 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.transparent,
           titleSpacing: 0.0,
           elevation: 0.0,
+          title: Text(''),
+          actions: <Widget>[
+
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(10.0),

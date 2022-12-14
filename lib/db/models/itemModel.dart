@@ -3,7 +3,7 @@ class Item {
   static const colId = 'id';
   static const colItemcode = 'item_code';
   static const colBarcode = 'barcode';
-//  static const colDescription = 'desc';
+  // static const colDescription = 'desc';
   static const colDescription = 'extended_desc';
   static const colUOM = 'uom';
   static const colVendor = 'vendor_name';
