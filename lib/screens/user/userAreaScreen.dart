@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/screens/user/itemScanningScreen.dart';
 import 'package:physicalcountv2/screens/user/syncScannedItemScreen.dart';
@@ -24,6 +25,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
 
   List _assignArea = [];
   bool checking = true;
+  List countType = [];
 
   @override
   void initState() {
@@ -36,8 +38,11 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return Container(
+
+      // onWillPop: () async => false,
+    // return WillPopScope(
+    //   onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -88,6 +93,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                         itemCount: _assignArea.length,
                         itemBuilder: (context, index) {
                           var data = _assignArea;
+                          var countData = countType;
                           return Padding(
                             padding:
                                 const EdgeInsets.only(right: 8.0, left: 8.0),
@@ -119,6 +125,32 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                       data[index]['rack_desc'],
                                       style: TextStyle(fontSize: 30),
                                     ),
+                                   Container(
+                                     padding: EdgeInsets.symmetric(horizontal: 30),
+                                      width: MediaQuery.of(context).size.width - 180,
+                                     child: Row(
+                                       mainAxisAlignment: MainAxisAlignment.center,
+                                       crossAxisAlignment: CrossAxisAlignment.center,
+                                       children: <Widget>[
+                                        Column(
+                                        children: <Widget>[
+                                          Text('Count Type: '+
+                                              countData[index]['countType'],
+                                            style: TextStyle(
+                                                color: Colors.deepOrange,
+                                                fontSize: 12),
+                                          ),
+                                          Text('Sched: '+
+                                              countData[index]['batchDate'],
+                                            style: TextStyle(
+                                                color: Colors.deepOrange,
+                                                fontSize: 12),
+                                          ),
+                                        ],
+                                        )
+                                       ],
+                                     ),
+                                   ),
                                     Spacer(),
                                   ],
                                 ),
@@ -130,6 +162,12 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           const EdgeInsets.only(right: 8.0),
                                       child: ElevatedButton(
                                         onPressed: () async {
+                                          // print('BATCH DATE: ${countData[index]['batchDate']}');
+                                          final batchDate = DateFormat("yyyy-MM-dd").parse(countData[index]['batchDate']);
+                                          final dateTimeNow = DateTime.now();
+                                          print('BATCH DATE: $batchDate');
+                                          final difference = dateTimeNow.difference(batchDate).inDays;
+                                          print('DIFFERENCE: $difference');
                                           if (data[index]['locked'] == 'false') {
                                             GlobalVariables.currentLocationID = data[index]['location_id'];
                                             GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
@@ -162,6 +200,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                             primary: Colors.blue),
                                         child: Row(
                                           children: [
+
                                             Icon(CupertinoIcons.barcode_viewfinder),
                                             Text("Start scan"),
                                           ],
@@ -319,6 +358,9 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
     _assignArea = [];
     _assignArea =
         await _sqfliteDBHelper.selectUserArea(GlobalVariables.logEmpNo);
+    countType = [];
+    countType = await _sqfliteDBHelper.getCountTypeDate(GlobalVariables.logEmpNo);
+    
     // List _loc = await _sqfliteDBHelper.selectU(GlobalVariables.logEmpNo);
     // // print(GlobalVariables.logEmpNo);
     // print(_loc);
@@ -328,6 +370,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
     } else {
       var user = int.parse(GlobalVariables.logEmpNo) * 1;
       _assignArea = await _sqfliteDBHelper.selectUserArea(user.toString());
+      countType = await _sqfliteDBHelper.getCountTypeDate(user.toString());
       checking = false;
       if (mounted) setState(() {});
     }

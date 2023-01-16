@@ -7,6 +7,7 @@ class Logs {
   static const colUser = 'user';
   static const colEmpId = 'empid';
   static const colDetails = 'details';
+  static const colUploaded = 'uploaded';
 
   late final int? id;
   late String? date;
@@ -15,6 +16,7 @@ class Logs {
   late String? user;
   late String? empid;
   late String? details;
+  late String? uploaded;
 
   Logs(
       {this.id,
@@ -23,7 +25,8 @@ class Logs {
       this.device,
       this.user,
       this.empid,
-      this.details});
+      this.details,
+      this.uploaded});
 
   Logs.fromMap(Map<String, dynamic> map) {
     id = map[colId];
@@ -33,6 +36,7 @@ class Logs {
     user = map[colUser];
     empid = map[colEmpId];
     details = map[colDetails];
+    uploaded = map[colUploaded];
   }
 
   Map<String, dynamic> toMap() {
@@ -42,7 +46,8 @@ class Logs {
       colDevice: device,
       colUser: user,
       colEmpId: empid,
-      colDetails: details
+      colDetails: details,
+      colUploaded: 'false'
     };
     map[colId] = id;
     return map;

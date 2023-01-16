@@ -30,6 +30,7 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
   var barcode_itemcode = ['Barcode','Item Code'];
   late FocusNode _node;
   var selected='';
+  final validCharacters = RegExp(r'^[0-9]+$');
   units.forEach((element) {
     _uomm.add(element['uom']);
   });
@@ -149,12 +150,22 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                       },
                       //SCAN NOT FOUND BARCODE
                       onChanged: (value) async {
-                        if (barcodeController.text.isNotEmpty &&
-                            qtyController.text.isNotEmpty) {
-                          btnSaveEnabled = true;
+                        if(validCharacters.hasMatch(value)==false){
+                          barcodeController.clear();
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("ERROR! Please input number only!"));
+                        }
+                        if(value.isEmpty || _selectedUom=='' || qtyController.text.isEmpty){
+                          btnSaveEnabled=false;
                           setModalState(() {});
-                        } else {
-                          btnSaveEnabled = false;
+                        }else{
+                          btnSaveEnabled=true;
                           setModalState(() {});
                         }
                       },
@@ -183,6 +194,14 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                       ),
                       onChanged: (val) {
                         _selectedUom = val.toString();
+                        if(barcodeController.text.isEmpty || val=='' || qtyController.text.isEmpty){
+                          btnSaveEnabled=false;
+                          setModalState(() {});
+                        }else{
+                          btnSaveEnabled=true;
+                          _selectedUom = val.toString();
+                          setModalState(() {});
+                        }
                         setModalState(() {});
                       },
                     ),
@@ -239,6 +258,7 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                             fontSize: 25,
                             color: Colors.blue,
                             fontWeight: FontWeight.bold)),
+
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
@@ -262,13 +282,17 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                           btnSaveEnabled=false;
                         },
                         onChanged: (value) {
-                          if(value.contains('.') || value.characters.first=='0'){
+                          if(value.isEmpty){
+                            btnSaveEnabled = false;
+                            setModalState(() {});
+                          }
+                          if(value.characters.first=='0' || validCharacters.hasMatch(value)==false){
                             qtyController.clear();
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
                           if (barcodeController.text.isNotEmpty &&
-                              qtyController.text.isNotEmpty) {
+                              qtyController.text.isNotEmpty && _selectedUom!='') {
                             btnSaveEnabled = true;
                             setModalState(() {});
                           } else {
@@ -292,7 +316,18 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
                         if (btnSaveEnabled == true) {
                           var dtls = "[LOGIN][Audit scan ID to save item.";
                           GlobalVariables.isAuditLogged = false;
-                          await scanAuditModal(context, db, dtls);
+                          if(qtyController.text.isEmpty){
+                            instantMsgModal(
+                                context,
+                                Icon(
+                                  CupertinoIcons.exclamationmark_circle,
+                                  color: Colors.red,
+                                  size: 40,
+                                ),
+                                Text("ERROR! Please input quantity!"));
+                          }else{
+                            await scanAuditModal(context, db, dtls);
+                          }
                           if (GlobalVariables.isAuditLogged == true) {
                             // if(barcodeController.text.length<=6){
                             //   //save item code

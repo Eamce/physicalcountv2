@@ -15,7 +15,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
 
   myFocusNodeBarcode = FocusNode();
   myFocusNodeQty = FocusNode();
-
+  final validCharacters = RegExp(r'^[0-9]+$');
   final barcodeController = TextEditingController();
   final qtyController = TextEditingController();
 
@@ -34,6 +34,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
     _uomm.add(element['uom']);
   });
   String _selectedUom = _uom[0]['uom'];
+  String uom='';
   void save()async{
     DateFormat dateFormat1 =
     DateFormat("yyyy-MM-dd hh:mm:ss aaa");
@@ -132,14 +133,24 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                       ),
                       //INPUT NOT FOUND ITEM USING ITEM CODE
                       onChanged: (value) {
+                        if(validCharacters.hasMatch(value)==false){
+                          barcodeController.clear();
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("ERROR! Please input number only!"));
+                        }
                         if(value.isEmpty || _selectedUom=='' || qtyController.text.isEmpty){
                           btnSaveEnabled=false;
+                          setModalState(() {});
                         }else{
                           btnSaveEnabled=true;
+                          setModalState(() {});
                         }
-                        print('_uomm barcode:  ');
-                        print(_selectedUom.trim());
-                        print('_uommmmm barcode: $_uom ');
                       },
                     ),
                   ),
@@ -165,16 +176,16 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                         ),
                       ),
                       onChanged: (val) {
+                        _selectedUom = val.toString();
                         if(barcodeController.text.isEmpty || val=='' || qtyController.text.isEmpty){
                           btnSaveEnabled=false;
+                          setModalState(() {});
                         }else{
                           btnSaveEnabled=true;
                           _selectedUom = val.toString();
+                          setModalState(() {});
                         }
                         setModalState(() {});
-                        print('_uomm: ');
-                        print(_selectedUom.trim());
-                        print('_uommmmm: $_uom ');
                         // _selectedUom = val.toString();
                         // setModalState(() {});
                       },
@@ -251,22 +262,23 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                               borderRadius: BorderRadius.circular(3)),
                         ),
                         onChanged: (value) {
-                          if(value.contains('.') || value.characters.first=='0'){
+                          if(value.isEmpty){
+                            btnSaveEnabled = false;
+                            setModalState(() {});
+                          }
+                          if(value.characters.first=='0' || validCharacters.hasMatch(value)==false){
                             qtyController.clear();
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
-                          else if (barcodeController.text.isNotEmpty && _selectedUom!='' &&
-                              qtyController.text.isNotEmpty) {
+                          if (barcodeController.text.isNotEmpty &&
+                              qtyController.text.isNotEmpty && _selectedUom!='') {
                             btnSaveEnabled = true;
                             setModalState(() {});
                           } else {
                             btnSaveEnabled = false;
                             setModalState(() {});
                           }
-                          print('_uomm quantity:  ');
-                          print(_selectedUom.trim());
-                          print('_uommmmm quantity: $_uom ');
                         },
                       ),
                     ),

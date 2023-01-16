@@ -29,6 +29,6 @@ class GlobalVariables {
   static bool isAuditLogged         = false;
   static String saveAuditSignature  = '';
   static String searchItemBarcode   = '';
-  static String editedQuantity      ='';
-  static int editCount              =0;
+  static String editedQuantity      = '';
+  static int editCount              = 0;
 }

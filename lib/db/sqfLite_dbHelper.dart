@@ -9,6 +9,7 @@ import 'package:physicalcountv2/db/models/locationModel.dart';
 import 'package:physicalcountv2/db/models/logsModel.dart';
 import 'package:physicalcountv2/db/models/unitModel.dart';
 import 'package:physicalcountv2/db/models/usersModel.dart';
+import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -42,7 +43,8 @@ class SqfliteDBHelper {
         ${Logs.colDevice} TEXT NOT NULL,
         ${Logs.colUser} TEXT NOT NULL,
         ${Logs.colEmpId} TEXT NOT NULL,
-        ${Logs.colDetails} TEXT NOT NULL
+        ${Logs.colDetails} TEXT NOT NULL,
+        ${Logs.colUploaded} TEXT NOT NULL
       )
     ''');
 //--LOGS TABLE--//
@@ -160,6 +162,8 @@ class SqfliteDBHelper {
         ${Filter.colbyVendor} TEXT,
         ${Filter.colvendorName} TEXT,
         ${Filter.coltype} TEXT,
+        ${Filter.colcountType} TEXT,
+        ${Filter.colbatchDate} TEXT,
         ${Filter.collocation} TEXT
       )
     ''');
@@ -502,6 +506,19 @@ class SqfliteDBHelper {
     return db.rawQuery(sql);
   }
 
+  Future getCountType(location_id)async{
+    var db = await database;
+     return db.rawQuery("SELECT countType FROM filter WHERE location_id = '$location_id' ");
+  }
+
+  Future getCountTypeDate(String emp_no)async{
+    var db = await database;
+    return db.rawQuery("SELECT user.emp_no, user.location_id, fil.batchDate, fil.countType "
+                       "FROM users AS user "
+                       "INNER JOIN filter AS fil ON user.location_id = fil.location_id "
+                       "WHERE user.emp_no = '$emp_no' ");
+  }
+
   Future updateItemNotFoundByLocation(String locationid, String column) async {
     var db = await database;
     return db.rawQuery(
@@ -552,10 +569,21 @@ class SqfliteDBHelper {
     return db.rawQuery(
         "UPDATE ${ItemCount.tblItemCount} SET $column WHERE location_id='$locationid'");
   }
-//-----------------ITEMCOUNT-----------------//
 
+//-----------------ITEMCOUNT-----------------//
  Future getAuditInfo(String id)async{
     var db= await database;
     return db.rawQuery("SELECT * FROM audit where emp_no = '$id'");
  }
+
+ Future getAuditTrail()async {
+   var db = await database;
+   return db.rawQuery("SELECT date, time, device, user, empid, details FROM ${Logs.tblLogs} WHERE uploaded = 'false' ");
+ }
+
+ Future updateTblAuditTrail()async{
+   var db = await database;
+   return db.rawQuery("UPDATE ${Logs.tblLogs} SET uploaded = 'true' WHERE uploaded = 'false' ");
+ }
+
 }

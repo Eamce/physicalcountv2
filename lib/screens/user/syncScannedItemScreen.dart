@@ -29,6 +29,9 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
   List _myAudit = [];
   List _items = [];
   List _nfitems = [];
+  List _auditTrail = [];
+  List count_type=[];
+  // String count_type="";
   String _auditor = "";
   bool checkingNetwork = false;
   bool syncingStatus = false;
@@ -303,37 +306,78 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
             size: 40,
           ),
           Text("${GlobalVariables.httpError}"));
-    } else {
+    }
+    else {
+
       await _getCountedItems();
       await _getCountedNfItems();
+      await _getAuditTrail();
+      await _getCountType();
+      print('COUNT TYPE: ${count_type[0]['countType']}');
       //NF ITEMS//
-      if (_nfitems.length > 0) {
-        var res = await syncNfItem(_nfitems,bytesUser,bytesAudit);
-        await _sqfliteDBHelper.updateItemNotFoundByLocation(
-            GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
-        if (res == true) {
-          _log.date     = dateFormat.format(DateTime.now());
-          _log.time     = timeFormat.format(DateTime.now());
-          _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-          _log.user     = GlobalVariables.logFullName;
-          _log.empid    = GlobalVariables.logEmpNo;
-          _log.details  = "[SYNCED][USER Synced Not Found Item on Location ID: ${GlobalVariables.currentLocationID}]";
-          await _sqfliteDBHelper.insertLog(_log);
+      if(count_type[0]['countType']=='ADVANCE'){
+        if (_nfitems.length > 0) {
+          var res = await syncNfItem_adv(_nfitems,bytesUser,bytesAudit);
+          await _sqfliteDBHelper.updateItemNotFoundByLocation(
+              GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
+          if (res == true) {
+            _log.date     = dateFormat.format(DateTime.now());
+            _log.time     = timeFormat.format(DateTime.now());
+            _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+            _log.user     = GlobalVariables.logFullName;
+            _log.empid    = GlobalVariables.logEmpNo;
+            _log.details  = "[SYNCED][USER Synced Not Found Item on Location ID: ${GlobalVariables.currentLocationID}]";
+            await _sqfliteDBHelper.insertLog(_log);
+          }
         }
-      }
-      //COUNT
-      if (_items.length > 0) {
-        var res = await syncItem(_items, bytesUser, bytesAudit);
-        await _sqfliteDBHelper.updateItemCountByLocation(
-            GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
-        if (res == true) {
-          _log.date     = dateFormat.format(DateTime.now());
-          _log.time     = timeFormat.format(DateTime.now());
-          _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-          _log.user     = GlobalVariables.logFullName;
-          _log.empid    = GlobalVariables.logEmpNo;
-          _log.details  = "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
-          await _sqfliteDBHelper.insertLog(_log);
+        //COUNT
+        if (_items.length > 0) {
+          var res = await syncItem_adv(_items, bytesUser, bytesAudit);
+          await _sqfliteDBHelper.updateItemCountByLocation(
+              GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
+          if (res == true) {
+            _log.date = dateFormat.format(DateTime.now());
+            _log.time = timeFormat.format(DateTime.now());
+            _log.device =
+            "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+            _log.user = GlobalVariables.logFullName;
+            _log.empid = GlobalVariables.logEmpNo;
+            _log.details =
+            "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables
+                .currentLocationID}]";
+            await _sqfliteDBHelper.insertLog(_log);
+          }
+        }
+        if (_auditTrail.length > 0) {
+          var res = await syncAuditTrail(_auditTrail);
+          if (res == true) {
+            checkingNetwork = false;
+            if (mounted) setState(() {
+              Navigator.pop(context);
+            });
+            await _sqfliteDBHelper.updateTblAuditTrail();
+            instantMsgModal(
+                context,
+                Icon(
+                  CupertinoIcons.checkmark_alt_circle,
+                  color: Colors.green,
+                  size: 40,
+                ),
+                Text("Data successfully synced."));
+          } else {
+            checkingNetwork = false;
+            if (mounted) setState(() {});
+            instantMsgModal(
+                context,
+                Icon(
+                  CupertinoIcons.exclamationmark_circle,
+                  color: Colors.red,
+                  size: 40,
+                ),
+                Text("Something went wrong.")
+            );
+          }
+        } else {
           checkingNetwork = false;
           if (mounted) setState(() {
             Navigator.pop(context);
@@ -341,14 +385,76 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
           instantMsgModal(
               context,
               Icon(
-                CupertinoIcons.checkmark_alt_circle,
-                color: Colors.green,
+                CupertinoIcons.exclamationmark_circle,
+                color: Colors.red,
                 size: 40,
               ),
-              Text("Data successfully synced."));
+              Text("No data to sync."));
+        }
+      }else{
+        if (_nfitems.length > 0) {
+          var res = await syncNfItem(_nfitems,bytesUser,bytesAudit);
+          await _sqfliteDBHelper.updateItemNotFoundByLocation(
+              GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
+          if (res == true) {
+            _log.date     = dateFormat.format(DateTime.now());
+            _log.time     = timeFormat.format(DateTime.now());
+            _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+            _log.user     = GlobalVariables.logFullName;
+            _log.empid    = GlobalVariables.logEmpNo;
+            _log.details  = "[SYNCED][USER Synced Not Found Item on Location ID: ${GlobalVariables.currentLocationID}]";
+            await _sqfliteDBHelper.insertLog(_log);
+          }
+        }
+        //COUNT
+        if (_items.length > 0) {
+          var res = await syncItem(_items, bytesUser, bytesAudit);
+          await _sqfliteDBHelper.updateItemCountByLocation(
+              GlobalVariables.currentLocationID, "exported = 'EXPORTED'");
+          if (res == true) {
+            _log.date    = dateFormat.format(DateTime.now());
+            _log.time    = timeFormat.format(DateTime.now());
+            _log.device  = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+            _log.user    = GlobalVariables.logFullName;
+            _log.empid   = GlobalVariables.logEmpNo;
+            _log.details = "[SYNCED][USER Synced Count Item on Location ID: ${GlobalVariables.currentLocationID}]";
+            await _sqfliteDBHelper.insertLog(_log);
+          }
+        }
+        if (_auditTrail.length > 0) {
+          var res = await syncAuditTrail(_auditTrail);
+          if (res == true) {
+            checkingNetwork = false;
+            if (mounted) setState(() {
+              Navigator.pop(context);
+            });
+            await _sqfliteDBHelper.updateTblAuditTrail();
+            instantMsgModal(
+                context,
+                Icon(
+                  CupertinoIcons.checkmark_alt_circle,
+                  color: Colors.green,
+                  size: 40,
+                ),
+                Text("Data successfully synced."));
+          } else {
+            checkingNetwork = false;
+            if (mounted) setState(() {});
+            instantMsgModal(
+                context,
+                Icon(
+                  CupertinoIcons.exclamationmark_circle,
+                  color: Colors.red,
+                  size: 40,
+                ),
+                Text("Something went wrong.")
+            );
+          }
         } else {
           checkingNetwork = false;
-          if (mounted) setState(() {});
+          if (mounted) setState(() {
+            Navigator.pop(context);
+          });
           instantMsgModal(
               context,
               Icon(
@@ -356,23 +462,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                 color: Colors.red,
                 size: 40,
               ),
-              Text("Something went wrong.")
-          );
+              Text("No data to sync."));
         }
-      } else {
-        checkingNetwork = false;
-        if (mounted) setState(() {
-          Navigator.pop(context);
-        });
-        instantMsgModal(
-            context,
-            Icon(
-              CupertinoIcons.exclamationmark_circle,
-              color: Colors.red,
-              size: 40,
-            ),
-            Text("No data to sync."));
       }
+
     }
   }
   _getCountedItems() async {
@@ -383,4 +476,13 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
     _nfitems = await _sqfliteDBHelper.selectItemNotFoundRawQuery(
         "SELECT barcode,itemcode,uom, qty,location, datetimecreated,business_unit,department,section,empno,rack_desc,description FROM ${ItemNotFound.tblItemNotFound} WHERE location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
   }
+
+  _getCountType()async{
+    count_type = await _sqfliteDBHelper.getCountType(GlobalVariables.currentLocationID);
+  }
+
+  _getAuditTrail() async{
+    _auditTrail = await _sqfliteDBHelper.getAuditTrail();
+  }
+
 }

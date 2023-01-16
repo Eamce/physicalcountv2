@@ -118,8 +118,23 @@ import 'package:retry/retry.dart';
       return convertedDataToJson;
     }
 
+    Future syncItem_adv(List items, String usersignature, String auditorsignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertAdvanceCount");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'items': json.encode(items),
+        'empno': GlobalVariables.logEmpNo,
+        'user_signature': usersignature,
+        'audit_signature': auditorsignature,
+        'locationid': GlobalVariables.currentLocationID,
+      }));
+      var convertedDataToJson = jsonDecode(response.body);
+      return convertedDataToJson;
+    }
+
     Future syncNfItem(List nfItems, String userSignature, String auditSignature) async {
-      var url = Uri.parse(ServerUrl.urlCI + "mapi/""insertNFItemList");
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFItemList");
       final response = await retry(() => http.post(url, headers: {
             "Accept": "Application/json"
           }, body: {
@@ -128,6 +143,30 @@ import 'package:retry/retry.dart';
             'audit_signature': auditSignature,
           }));
       var convertedDataToJson = jsonDecode(response .body);
+      return convertedDataToJson;
+    }
+
+    Future syncNfItem_adv(List nfItems, String userSignature, String auditSignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFAdvanceCount");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'nfitems': json.encode(nfItems),
+        'user_signature': userSignature,
+        'audit_signature': auditSignature,
+      }));
+      var convertedDataToJson = jsonDecode(response .body);
+      return convertedDataToJson;
+    }
+
+    Future syncAuditTrail(List logs) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertAuditTrail");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'logs': json.encode(logs),
+      }));
+      var convertedDataToJson = jsonDecode(response.body);
       return convertedDataToJson;
     }
 

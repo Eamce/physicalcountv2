@@ -52,9 +52,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   int locationMasterfileCount = 0;
   int itemMasterfileCount = 0;
   int filterMasterfileCount = 0;
-
   late SqfliteDBHelper _sqfliteDBHelper;
-  Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
   bool checkingNetwork = false;
@@ -64,7 +62,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   List itemMasterfileData = [];
   List filter = [];
   List dunit = [];
-
+  Logs _log = Logs();
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
@@ -346,7 +344,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
 
       auditMastefileCount = auditMastefileCount + auditMasterfileData.length;
       if (mounted) setState(() {});
-
       tables[1]['status'] = "done";
       if (mounted) setState(() {});
       _log.date = dateFormat.format(DateTime.now());

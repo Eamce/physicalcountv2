@@ -202,6 +202,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                     },
                     child: Text("Barcode Input")),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: TextFormField(
@@ -216,6 +217,11 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(3)),
                   ),
+                  onChanged: (value){
+                   if(validCharacters.hasMatch(value)==false){
+                     barcodeController.clear();
+                   }
+                  },
                   onFieldSubmitted: (value) {
                     searchItem(value);
                   },

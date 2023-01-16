@@ -1,8 +1,10 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/values/bodySize.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
+import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
 updateNotFoundItemModal(
@@ -23,7 +25,7 @@ updateNotFoundItemModal(
   var _uom = units;
   String _selectedUom = uom;
   qtyController.text = qty;
-
+  final validCharacters = RegExp(r'^[0-9]+$');
   var _uomm = [];
   units.forEach((element) {
     _uomm.add(element['uom']);
@@ -168,6 +170,9 @@ updateNotFoundItemModal(
                           qtyController.clear();
                         },
                         onChanged: (value) {
+                          if(value.characters.first=='0' || validCharacters.hasMatch(value)==false){
+                            qtyController.clear();
+                          }
                           if (qtyController.text.isNotEmpty) {
                             setModalState(() {});
                           } else {
@@ -188,8 +193,19 @@ updateNotFoundItemModal(
                           style: TextStyle(color: Colors.white, fontSize: 25)),
                       onPressed: () async {
                         GlobalVariables.isAuditLogged = false;
-                        await scanAuditModal(context, db, details);
-                        if (GlobalVariables.isAuditLogged == true) {
+                        if (GlobalVariables.isAuditLogged == false && qtyController.text.isEmpty) {
+                          instantMsgModal(
+                              context,
+                              Icon(
+                                CupertinoIcons.exclamationmark_circle,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                              Text("ERROR! Please input quantity!"));
+                        }else{
+                          await scanAuditModal(context, db, details);
+                        }
+                        if (GlobalVariables.isAuditLogged != false && qtyController.text.isNotEmpty){
                           await db.updateItemNotFoundWhere(int.parse(id),
                               'uom = "${_selectedUom.trim()}", qty = "${qtyController.text.trim()}"');
                           Navigator.pop(context);

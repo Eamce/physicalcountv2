@@ -160,7 +160,7 @@ class _ViewItemNotFoundScanScreenState
                                         children: [
                                           Spacer(),
                                           Icon(
-                                            itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill : CupertinoIcons.info_circle_fill,
+                                             itemNotFound[index].exported == 'EXPORTED' ? CupertinoIcons.checkmark_alt_circle_fill : CupertinoIcons.info_circle_fill,
                                             color: itemNotFound[index].exported == 'EXPORTED'
                                                     ? Colors.green
                                                     : Colors.red,
@@ -218,7 +218,7 @@ class _ViewItemNotFoundScanScreenState
   getUnits() async {
     units = await _sqfliteDBHelper.selectUnitsAll();
     List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
-        "location = '${GlobalVariables.currentLocationID}'");
+        "location = '${GlobalVariables.currentLocationID}'  AND exported = 'false' ");
     itemNotFound = x;
     _loading = false;
     if (mounted) setState(() {});
@@ -226,7 +226,7 @@ class _ViewItemNotFoundScanScreenState
 
   _refreshItemList() async {
     List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
-        "location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
+        "location = '${GlobalVariables.currentLocationID}' AND exported = 'false' ");
     itemNotFound = x;
     if (mounted) setState(() {});
   }
@@ -236,14 +236,12 @@ class _ViewItemNotFoundScanScreenState
     _refreshItemList();
 
     //logs
-    _log.date = dateFormat.format(DateTime.now());
-    _log.time = timeFormat.format(DateTime.now());
-    _log.device =
-        "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-    _log.user = "${GlobalVariables.logFullName}Inventory Clerk[]";
-    _log.empid = GlobalVariables.logEmpNo;
-    _log.details =
-        "[DELETE][Delete item (barcode: ${itemNotFound[index].barcode} unit: ${itemNotFound[index].uom} qty: ${itemNotFound[index].qty})]";
+    _log.date     = dateFormat.format(DateTime.now());
+    _log.time     = timeFormat.format(DateTime.now());
+    _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+    _log.user     = "${GlobalVariables.logFullName}Inventory Clerk[]";
+    _log.empid    = GlobalVariables.logEmpNo;
+    _log.details  =  "[DELETE][Delete item (barcode: ${itemNotFound[index].barcode} unit: ${itemNotFound[index].uom} qty: ${itemNotFound[index].qty})]";
     await _sqfliteDBHelper.insertLog(_log);
   }
 }
