@@ -38,11 +38,8 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-
-      // onWillPop: () async => false,
-    // return WillPopScope(
-    //   onWillPop: () async => false,
+    return WillPopScope(
+      onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
           title: Text(
@@ -356,8 +353,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
 
   _refreshUserAssignAreaList() async {
     _assignArea = [];
-    _assignArea =
-        await _sqfliteDBHelper.selectUserArea(GlobalVariables.logEmpNo);
+    _assignArea = await _sqfliteDBHelper.selectUserArea(GlobalVariables.logEmpNo);
     countType = [];
     countType = await _sqfliteDBHelper.getCountTypeDate(GlobalVariables.logEmpNo);
     
