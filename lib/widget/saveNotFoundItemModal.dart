@@ -312,6 +312,7 @@ saveNotFoundItemModal(BuildContext context, SqfliteDBHelper db, List units) {
                             _itemNotFound.section=GlobalVariables.currentSection;
                             _itemNotFound.empno=GlobalVariables.logEmpNo;
                             _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
+                            _itemNotFound.description='Item Code';
                             _itemNotFound.barcode='00000000';
                             await db.insertItemNotFound(_itemNotFound);
                             myFocusNodeBarcode.requestFocus();

@@ -53,7 +53,7 @@ saveNotFoundBarcode(BuildContext context, SqfliteDBHelper db, List units) {
     _itemNotFound.section=GlobalVariables.currentSection;
     _itemNotFound.empno=GlobalVariables.logEmpNo;
     _itemNotFound.rack_desc=GlobalVariables.currentRackDesc;
-    _itemNotFound.description='Barcode';
+    _itemNotFound.description='barcode';
     await db.insertItemNotFound(_itemNotFound);
     myFocusNodeBarcode.requestFocus();
     barcodeController.clear();

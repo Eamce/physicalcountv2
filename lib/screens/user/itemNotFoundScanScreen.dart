@@ -401,8 +401,8 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     fontWeight:
                                                     FontWeight.bold)),
                                             TextSpan(
-                                                text:
-                                                "${itemNotFound[index].barcode}",
+                                                text: itemNotFound[index].description == 'barcode' ?
+                                                "${itemNotFound[index].barcode}" : "${itemNotFound[index].itemcode} ",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))
@@ -622,7 +622,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   getUnits() async {
     units = await _sqfliteDBHelper.selectUnitsAll();
     List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
-        "location = '${GlobalVariables.currentLocationID}'");
+        "location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED' ");
     itemNotFound = x;
     _loading = false;
     if (mounted) setState(() {});

@@ -12,6 +12,7 @@ import 'package:physicalcountv2/widget/customLogicalModal.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/widget/itemNofFoundModal.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../db/models/itemNotFoundModel.dart';
@@ -172,35 +173,52 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                child: TextButton(
-                    onPressed: () {
-                      selectedDate = DateTime.now();
-                      barcodeController.clear();
-                      qtyController.clear();
-                      itemCode = "Unknown";
-                      itemDescription = "Unknown";
-                      itemUOM = "Unknown";
-                      myFocusNodeBarcode.requestFocus();
-                      btnSaveEnabled = false;
-                      if (mounted) setState(() {});
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BarcodeInputSearchScreen()),
-                      ).then((value) {
-                        if (value == true) {
-                          barcodeController.text =
-                              GlobalVariables.searchItemBarcode;
-                          searchItem(barcodeController.text);
-                          print(barcodeController.text);
-                          myFocusNodeQty.requestFocus();
+              Row(
+                children:<Widget> [
+                  // IconButton(
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //           context,
+                  //           PageTransition(
+                  //               type: PageTransitionType.fade,
+                  //               child: ItemScanningScreen()
+                  //               // child: SearchProductsBarcode()
+                  //           ));
+                  //     },
+                  //     icon: Icon(CupertinoIcons.barcode_viewfinder,
+                  //         color: Colors.red)),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 0.0, right: 20.0),
+                    child: TextButton(
+                        onPressed: () {
+                          selectedDate = DateTime.now();
+                          barcodeController.clear();
+                          qtyController.clear();
+                          itemCode = "Unknown";
+                          itemDescription = "Unknown";
+                          itemUOM = "Unknown";
+                          myFocusNodeBarcode.requestFocus();
+                          btnSaveEnabled = false;
                           if (mounted) setState(() {});
-                        }
-                      });
-                    },
-                    child: Text("Barcode Input")),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+
+                                builder: (context) => BarcodeInputSearchScreen()),
+                          ).then((value) {
+                            if (value == true) {
+                              barcodeController.text =
+                                  GlobalVariables.searchItemBarcode;
+                              searchItem(barcodeController.text);
+                              print(barcodeController.text);
+                              myFocusNodeQty.requestFocus();
+                              if (mounted) setState(() {});
+                            }
+                          });
+                        },
+                        child: Text("Barcode Input")),
+                  ),
+                ],
               ),
 
               Padding(

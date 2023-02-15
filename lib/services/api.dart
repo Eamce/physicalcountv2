@@ -39,6 +39,42 @@ import 'package:retry/retry.dart';
       }
     }
 
+
+Future checkConnection() async {
+  try {
+    var url = Uri.parse(ServerUrl.urlCI + "mapi/checkConnection");
+     final response = await http.get(url).timeout(const Duration(seconds: 20));
+     if (response.statusCode == 200) {
+       return 'connected';
+     } else if (response.statusCode >= 400 || response.statusCode <= 499) {
+       GlobalVariables.httpError =
+           "Error: Client issued a malformed or illegal request.";
+       return 'error';
+     } else if (response.statusCode >= 500 || response.statusCode <= 599) {
+       GlobalVariables.httpError = "Error: Internal server error.";
+       return 'error';
+     }
+  } on TimeoutException {
+    GlobalVariables.httpError =
+    "Connection timed out. Please check internet connection or proxy server configurations.";
+    return 'errornet';
+  } on SocketException {
+    GlobalVariables.httpError =
+    "Connection timed out. Please check internet connection or proxy server configurations.";
+    return 'errornet';
+  } on HttpException {
+    GlobalVariables.httpError =
+    "Error: An HTTP error eccured. Please try again later.";
+    return 'error';
+  } on FormatException {
+    GlobalVariables.httpError =
+    "Error: Format exception error occured. Please try again later.";
+    return 'error';
+  }
+}
+
+
+
     Future getUserMasterfile() async {
       var url = Uri.parse(ServerUrl.urlCI + "mapi/getUserMasterfile");
       final response = await retry(
@@ -133,6 +169,21 @@ import 'package:retry/retry.dart';
       return convertedDataToJson;
     }
 
+    Future syncItem_freegoods(List items, String usersignature, String auditorsignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertFreeGoodsCount");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'items': json.encode(items),
+        'empno': GlobalVariables.logEmpNo,
+        'user_signature': usersignature,
+        'audit_signature': auditorsignature,
+        'locationid': GlobalVariables.currentLocationID,
+      }));
+      var convertedDataToJson = jsonDecode(response.body);
+      return convertedDataToJson;
+    }
+
     Future syncNfItem(List nfItems, String userSignature, String auditSignature) async {
       var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFItemList");
       final response = await retry(() => http.post(url, headers: {
@@ -142,6 +193,18 @@ import 'package:retry/retry.dart';
             'user_signature': userSignature,
             'audit_signature': auditSignature,
           }));
+      var convertedDataToJson = jsonDecode(response .body);
+      return convertedDataToJson;
+    }
+    Future syncNfItem_freegoods(List nfItems, String userSignature, String auditSignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFFreeGoods");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'nfitems': json.encode(nfItems),
+        'user_signature': userSignature,
+        'audit_signature': auditSignature,
+      }));
       var convertedDataToJson = jsonDecode(response .body);
       return convertedDataToJson;
     }
@@ -195,3 +258,7 @@ import 'package:retry/retry.dart';
     Future getServer() async{
       var url = Uri.parse(ServerUrl.urlCI + "mapi/updateSignature");
     }
+
+
+
+
