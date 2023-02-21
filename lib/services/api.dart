@@ -39,6 +39,42 @@ import 'package:retry/retry.dart';
       }
     }
 
+
+Future checkConnection() async {
+  try {
+    var url = Uri.parse(ServerUrl.urlCI + "mapi/checkConnection");
+     final response = await http.get(url).timeout(const Duration(seconds: 20));
+     if (response.statusCode == 200) {
+       return 'connected';
+     } else if (response.statusCode >= 400 || response.statusCode <= 499) {
+       GlobalVariables.httpError =
+           "Error: Client issued a malformed or illegal request.";
+       return 'error';
+     } else if (response.statusCode >= 500 || response.statusCode <= 599) {
+       GlobalVariables.httpError = "Error: Internal server error.";
+       return 'error';
+     }
+  } on TimeoutException {
+    GlobalVariables.httpError =
+    "Connection timed out. Please check internet connection or proxy server configurations.";
+    return 'errornet';
+  } on SocketException {
+    GlobalVariables.httpError =
+    "Connection timed out. Please check internet connection or proxy server configurations.";
+    return 'errornet';
+  } on HttpException {
+    GlobalVariables.httpError =
+    "Error: An HTTP error eccured. Please try again later.";
+    return 'error';
+  } on FormatException {
+    GlobalVariables.httpError =
+    "Error: Format exception error occured. Please try again later.";
+    return 'error';
+  }
+}
+
+
+
     Future getUserMasterfile() async {
       var url = Uri.parse(ServerUrl.urlCI + "mapi/getUserMasterfile");
       final response = await retry(
@@ -222,3 +258,7 @@ import 'package:retry/retry.dart';
     Future getServer() async{
       var url = Uri.parse(ServerUrl.urlCI + "mapi/updateSignature");
     }
+
+
+
+

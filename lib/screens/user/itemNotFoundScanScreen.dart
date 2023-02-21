@@ -401,8 +401,8 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                                     fontWeight:
                                                     FontWeight.bold)),
                                             TextSpan(
-                                                text:
-                                                "${itemNotFound[index].barcode}",
+                                                text: itemNotFound[index].description == 'barcode' ?
+                                                "${itemNotFound[index].barcode}" : "${itemNotFound[index].itemcode} ",
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.black))

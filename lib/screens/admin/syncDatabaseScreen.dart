@@ -63,9 +63,11 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   List filter = [];
   List dunit = [];
   Logs _log = Logs();
+  bool btn_sync = false;
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
+    btn_sync = true;
     if (mounted) setState(() {});
     animationController = new AnimationController(
       vsync: this,
@@ -251,7 +253,6 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
                 onPressed: () async {
                   checkingNetwork = true;
                   if (mounted) setState(() {});
-
                   var res = await checkIfConnectedToNetwork();
                   checkingNetwork = false;
                   if (mounted) setState(() {});
@@ -275,6 +276,9 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
                         Text("${GlobalVariables.httpError}"));
                   } else {
                     continueSync();
+                    // setState(() {
+                    //   btn_sync =true;
+                    // });
                   }
                 },
               ),
