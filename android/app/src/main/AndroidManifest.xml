@@ -12,7 +12,11 @@
     <uses-feature android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET" />
    <application
+<<<<<<< HEAD
+        android:label="Physical Count"
+=======
         android:label="PC-Alt_Snackbar"
+>>>>>>> 602cdecaba222ee44c0a3eddc374bc9c812d7943
         android:name="${applicationName}"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/launcher_icon">
