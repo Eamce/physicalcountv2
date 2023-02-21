@@ -11,6 +11,7 @@ import 'package:physicalcountv2/services/server_url.dart';
 import 'package:physicalcountv2/services/server_url_list.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/customLogicalModal.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({Key? key}) : super(key: key);
@@ -25,6 +26,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   var server = ServerUrlList().serverUrlKey();
   var serverName = [''];
   var _currentItemSelectd = '';
+  String prev_server="";
+  String new_server ="";
 
   late SqfliteDBHelper _sqfliteDBHelper;
   Logs _log = Logs();
@@ -32,12 +35,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
 
   @override
-  void initState() {
+  void initState()  {
+
     ServerUrl su = ServerUrl();
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     serverName.addAll(server);
-    serverName.removeAt(0);
-    _currentItemSelectd = serverName[0];
+    // serverName.removeAt(0);
+    checkSelectedServer();
     if (mounted) setState(() {});
     super.initState();
   }
@@ -76,14 +80,18 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: Text(dropDownStringItem),
                 );
               }).toList(),
-              onChanged: (String? newValueSelected){
+              onChanged: (String? newValueSelected) async{
+                SharedPreferences prefs = await SharedPreferences.getInstance();
                 ServerUrl su = ServerUrl();
                 ServerUrlList sul = ServerUrlList();
                 print("previous server :: ${su.serverValue}");
                 // _onDropDownItemSelected(newValueSelected);
                 setState(() {
+                  prefs.setString("new_server", newValueSelected.toString().trim());
                   this._currentItemSelectd = newValueSelected!;
-                  su.serverValue = sul.ip(newValueSelected);
+                  // su.serverValue = sul.ip(newValueSelected);
+                  new_server = prefs.getString('new_server').toString();
+                  su.serverValue = sul.ip(new_server);
                   print("new server :: ${ServerUrl.urlCI}");
                 });
               },
@@ -210,5 +218,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           (Route route) => false);
     });
+  }
+  checkSelectedServer()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.getString('new_server');
+    this._currentItemSelectd = prefs.getString('new_server').toString();
+    print('NEW SERVER : ${prefs.getString('new_server').toString()}');
   }
 }

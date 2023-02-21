@@ -9,6 +9,7 @@ import 'package:physicalcountv2/screens/user/viewItemScannedListScreen.dart';
 import 'package:physicalcountv2/services/api.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
+import 'package:physicalcountv2/services/server_url.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 
 class UserAreaScreen extends StatefulWidget {
@@ -43,9 +44,19 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            "User Area",
-            style: TextStyle(color: Colors.blue),
+          title: Row(
+           children: [
+             Text(
+               "User Area       ",
+               style: TextStyle(color: Colors.blue),
+             ),
+
+             Text(
+               "Server: " + "${ServerUrl.urlCI}" ,
+
+               style: TextStyle(color: Colors.blue),
+             ),
+           ],
           ),
           backgroundColor: Colors.transparent,
           titleSpacing: 0.0,
