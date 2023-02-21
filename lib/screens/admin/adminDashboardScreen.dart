@@ -42,7 +42,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     serverName.addAll(server);
     // serverName.removeAt(0);
     checkSelectedServer();
-
     if (mounted) setState(() {});
     super.initState();
   }
