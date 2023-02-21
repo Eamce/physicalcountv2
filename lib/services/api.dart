@@ -133,6 +133,21 @@ import 'package:retry/retry.dart';
       return convertedDataToJson;
     }
 
+    Future syncItem_freegoods(List items, String usersignature, String auditorsignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertFreeGoodsCount");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'items': json.encode(items),
+        'empno': GlobalVariables.logEmpNo,
+        'user_signature': usersignature,
+        'audit_signature': auditorsignature,
+        'locationid': GlobalVariables.currentLocationID,
+      }));
+      var convertedDataToJson = jsonDecode(response.body);
+      return convertedDataToJson;
+    }
+
     Future syncNfItem(List nfItems, String userSignature, String auditSignature) async {
       var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFItemList");
       final response = await retry(() => http.post(url, headers: {
@@ -142,6 +157,18 @@ import 'package:retry/retry.dart';
             'user_signature': userSignature,
             'audit_signature': auditSignature,
           }));
+      var convertedDataToJson = jsonDecode(response .body);
+      return convertedDataToJson;
+    }
+    Future syncNfItem_freegoods(List nfItems, String userSignature, String auditSignature) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/insertNFFreeGoods");
+      final response = await retry(() => http.post(url, headers: {
+        "Accept": "Application/json"
+      }, body: {
+        'nfitems': json.encode(nfItems),
+        'user_signature': userSignature,
+        'audit_signature': auditSignature,
+      }));
       var convertedDataToJson = jsonDecode(response .body);
       return convertedDataToJson;
     }

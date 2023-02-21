@@ -622,7 +622,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   getUnits() async {
     units = await _sqfliteDBHelper.selectUnitsAll();
     List<ItemNotFound> x = await _sqfliteDBHelper.fetchItemNotFoundWhere(
-        "location = '${GlobalVariables.currentLocationID}'");
+        "location = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED' ");
     itemNotFound = x;
     _loading = false;
     if (mounted) setState(() {});

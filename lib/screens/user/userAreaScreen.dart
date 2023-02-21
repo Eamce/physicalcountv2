@@ -360,7 +360,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
     // List _loc = await _sqfliteDBHelper.selectU(GlobalVariables.logEmpNo);
     // // print(GlobalVariables.logEmpNo);
     // print(_loc);
-    if (_assignArea.length > 0) {
+    if (_assignArea.length > 0 && countType.length>0) {
       checking = false;
       if (mounted) setState(() {});
     } else {

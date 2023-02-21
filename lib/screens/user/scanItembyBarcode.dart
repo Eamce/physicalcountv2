@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:physicalcountv2/db/models/itemCountModel.dart';
 import 'package:physicalcountv2/db/models/logsModel.dart';
@@ -13,24 +14,27 @@ import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/widget/itemNofFoundModal.dart';
 import 'package:physicalcountv2/widget/scanAuditModal.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../db/models/itemNotFoundModel.dart';
 import '../../widget/saveNotFoundBarcode.dart';
 import '../../widget/saveNotFoundItemModal.dart';
 
-class ItemScanningScreen extends StatefulWidget {
-  const ItemScanningScreen({Key? key}) : super(key: key);
+class ScanItemBarcode extends StatefulWidget {
+  const ScanItemBarcode({Key? key}) : super(key: key);
   @override
-  _ItemScanningScreenState createState() => _ItemScanningScreenState();
+  _ScanItemBarcode createState() => _ScanItemBarcode();
 }
-class _ItemScanningScreenState extends State<ItemScanningScreen> {
+class _ScanItemBarcode extends State<ScanItemBarcode> {
   late FocusNode myFocusNodeBarcode;
   late FocusNode myFocusNodeQty;
   final barcodeController = TextEditingController();
   final qtyController = TextEditingController();
   final auditIDController = TextEditingController();
   List units = [];
+  bool initLoad = true;
+  String barcode = '';
   List<ItemNotFound> itemNotFound = [];
   bool btnSaveEnabled = false;
   String itemCode = "";
@@ -65,16 +69,17 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
 
   @override
   void initState() {
-    _sqfliteDBHelper = SqfliteDBHelper.instance;
-    getUnits();
-    if (mounted) setState(() {});
-    btnSaveEnabled = false;
-    itemCode = "Unknown";
-    itemDescription = "Unknown";
-    itemUOM = "Unknown";
-    if (mounted) setState(() {});
-    myFocusNodeBarcode = FocusNode();
-    myFocusNodeQty = FocusNode();
+    // _sqfliteDBHelper = SqfliteDBHelper.instance;
+    scanBarcodeNormal();
+    // getUnits();
+    // if (mounted) setState(() {});
+    // btnSaveEnabled = false;
+    // itemCode = "Unknown";
+    // itemDescription = "Unknown";
+    // itemUOM = "Unknown";
+    // if (mounted) setState(() {});
+    // myFocusNodeBarcode = FocusNode();
+    // myFocusNodeQty = FocusNode();
     super.initState();
   }
 
@@ -95,7 +100,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                 customLogicalModal(
                     context,
                     Text("Are you finished scanning this area? Click YES to tag this area FINISHED. Setting this area to FINISHED will auto lock the area. Continue?"),
-                    () => Navigator.pop(context), () async {
+                        () => Navigator.pop(context), () async {
                   var dtls = "[FINISHED][Audit tag rack (${GlobalVariables.currentBusinessUnit}/${GlobalVariables.currentDepartment}/${GlobalVariables.currentSection}/${GlobalVariables.currentRackDesc}) to FINISHED]";
                   GlobalVariables.isAuditLogged = false;
                   await scanAuditModal(context, _sqfliteDBHelper, dtls);
@@ -175,18 +180,18 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
             children: [
               Row(
                 children:<Widget> [
-                  // IconButton(
-                  //     onPressed: () {
-                  //       Navigator.push(
-                  //           context,
-                  //           PageTransition(
-                  //               type: PageTransitionType.fade,
-                  //               child: ItemScanningScreen()
-                  //               // child: SearchProductsBarcode()
-                  //           ));
-                  //     },
-                  //     icon: Icon(CupertinoIcons.barcode_viewfinder,
-                  //         color: Colors.red)),
+                  IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.fade,
+                                child: ScanItemBarcode()
+                              // child: SearchProductsBarcode()
+                            ));
+                      },
+                      icon: Icon(CupertinoIcons.barcode_viewfinder,
+                          color: Colors.red)),
                   Padding(
                     padding: const EdgeInsets.only(left: 0.0, right: 20.0),
                     child: TextButton(
@@ -203,7 +208,6 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-
                                 builder: (context) => BarcodeInputSearchScreen()),
                           ).then((value) {
                             if (value == true) {
@@ -236,9 +240,9 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                         borderRadius: BorderRadius.circular(3)),
                   ),
                   onChanged: (value){
-                   if(validCharacters.hasMatch(value)==false){
-                     barcodeController.clear();
-                   }
+                    if(validCharacters.hasMatch(value)==false){
+                      barcodeController.clear();
+                    }
                   },
                   onFieldSubmitted: (value) {
                     searchItem(value);
@@ -283,8 +287,8 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                           text: "Description: ",
                           style: TextStyle(
                               fontSize: 25,
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold)),
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold)),
                       TextSpan(
                           text: "$itemDescription",
                           style: TextStyle(fontSize: 25, color: Colors.black))
@@ -311,31 +315,31 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                 ),
               ),
               GlobalVariables.countType != 'ANNUAL' &&
-                      GlobalVariables.enableExpiry == true
+                  GlobalVariables.enableExpiry == true
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                      child: Row(
-                        children: [
-                          Text("Expiry Date: ",
-                              style: TextStyle(
-                                  fontSize: 25,
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold)),
-                          Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  primary: Colors.blue),
-                              onPressed: () => _selectDate(context),
-                              child: Text(
-                                selectedDate.toString() != "-0001-11-30 00:00:00.000" ? "${DateFormat('MMMM dd, yyyy').format(selectedDate)}" : "0000-00-00",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: Row(
+                  children: [
+                    Text("Expiry Date: ",
+                        style: TextStyle(
+                            fontSize: 25,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold)),
+                    Container(
+                      width: MediaQuery.of(context).size.width / 3,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.blue),
+                        onPressed: () => _selectDate(context),
+                        child: Text(
+                          selectedDate.toString() != "-0001-11-30 00:00:00.000" ? "${DateFormat('MMMM dd, yyyy').format(selectedDate)}" : "0000-00-00",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                    )
+                    ),
+                  ],
+                ),
+              )
                   : SizedBox(),
               Padding(
                 padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -355,7 +359,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                         style: TextStyle(fontSize: 50),
                         decoration: InputDecoration(
                           contentPadding:
-                              EdgeInsets.all(8.0), //here your padding
+                          EdgeInsets.all(8.0), //here your padding
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(3)),
                         ),
@@ -388,17 +392,17 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                               btnSaveEnabled = false;
                               if (mounted) setState(() {});
                             }
-                          //  if (mounted) setState(() {});
+                            //  if (mounted) setState(() {});
                           } else {
                             btnSaveEnabled = false;
                             if (mounted) setState(() {});
                           }
                         },
                         onFieldSubmitted: (value){
-                           qtyController.clear();
-                           btnSaveEnabled=false;
-                           if(mounted) setState(() {
-                           });
+                          qtyController.clear();
+                          btnSaveEnabled=false;
+                          if(mounted) setState(() {
+                          });
                         },
                       ),
                     ),
@@ -551,13 +555,13 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                         child: Text("Barcode: " + GlobalVariables.prevBarCode,
                             style:
-                                TextStyle(fontSize: 15, color: Colors.white)),
+                            TextStyle(fontSize: 15, color: Colors.white)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                         child: Text("Itemcode: " + GlobalVariables.prevItemCode,
                             style:
-                                TextStyle(fontSize: 15, color: Colors.white)),
+                            TextStyle(fontSize: 15, color: Colors.white)),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -590,7 +594,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
                         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
                         child: Text("Quantity: " + GlobalVariables.prevQty,
                             style:
-                                TextStyle(fontSize: 15, color: Colors.white)),
+                            TextStyle(fontSize: 15, color: Colors.white)),
                       ),
                     ],
                   ),
@@ -650,7 +654,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
 //------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//
     if (GlobalVariables.byCategory == false &&
         GlobalVariables.byVendor == false) {
-     print('//------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//');
+      print('//------BY CATEGORY == FALSE AND BY VENDOR = FALSE------//');
       var x = await _sqfliteDBHelper.selectItemWhere(value);
       print('VALUE : $value');
       if (x.length > 0) {
@@ -765,7 +769,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
     _loading = false;
     if (mounted) setState(() {});
   }
-   showAlertDialog(){
+  showAlertDialog(){
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -793,8 +797,31 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
     );
   }
 
-    //Future<bool>
-    searchInputtedItem(String data)async{
+  Future<void> scanBarcodeNormal() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.BARCODE);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    barcode = barcodeScanRes;
+    initLoad = false;
+    // GlobalVariables.searchProduct = [];
+    if (mounted) setState(() {});
+    // print(barcode);
+    // await loadOffset();
+  }
+  //Future<bool>
+  searchInputtedItem(String data)async{
     var x = await _sqfliteDBHelper.selectItemWhere(data);
     if (x.length > 0) {
       itemCode = x[0]['item_code'];
@@ -803,13 +830,13 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
       dtItemScanned = dateFormat.format(DateTime.now()) + " " + timeFormat.format(DateTime.now());
       convQty = int.parse(x[0]['conversion_qty']);
       if (mounted) setState(() {});
-  //  return Future<bool>.value(true);
+      //  return Future<bool>.value(true);
     }else{
       itemCode = 'Unknown';
       itemDescription = 'Unknown';
       itemUOM = 'Unknown';
       if (mounted) setState(() {});
-   //   return Future<bool>.value(false);
+      //   return Future<bool>.value(false);
     }
   }
 
