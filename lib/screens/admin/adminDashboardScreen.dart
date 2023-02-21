@@ -7,6 +7,8 @@ import 'package:physicalcountv2/main.dart';
 import 'package:physicalcountv2/screens/admin/activityLogScreen.dart';
 import 'package:physicalcountv2/screens/admin/signatureCapture.dart';
 import 'package:physicalcountv2/screens/admin/syncDatabaseScreen.dart';
+import 'package:physicalcountv2/services/server_url.dart';
+import 'package:physicalcountv2/services/server_url_list.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/customLogicalModal.dart';
 
@@ -17,6 +19,13 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+
+  //late Servers servers;
+  ServerUrlList sul = ServerUrlList();
+  var server = ServerUrlList().serverUrlKey();
+  var serverName = [''];
+  var _currentItemSelectd = '';
+
   late SqfliteDBHelper _sqfliteDBHelper;
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -24,7 +33,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   void initState() {
+    ServerUrl su = ServerUrl();
     _sqfliteDBHelper = SqfliteDBHelper.instance;
+    serverName.addAll(server);
+    serverName.removeAt(0);
+    _currentItemSelectd = serverName[0];
     if (mounted) setState(() {});
     super.initState();
   }
@@ -48,6 +61,39 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
           ),
           actions: <Widget>[
+            Text("Select Server :    ",
+              style: TextStyle(
+                color: Colors.black,
+                height: 2,
+                fontSize: 18,
+              ),
+            ),
+            DropdownButton(
+              value: _currentItemSelectd,
+              items: serverName.map((String dropDownStringItem){
+                return DropdownMenuItem(
+                  value: dropDownStringItem,
+                  child: Text(dropDownStringItem),
+                );
+              }).toList(),
+              onChanged: (String? newValueSelected){
+                ServerUrl su = ServerUrl();
+                ServerUrlList sul = ServerUrlList();
+                print("previous server :: ${su.serverValue}");
+                // _onDropDownItemSelected(newValueSelected);
+                setState(() {
+                  this._currentItemSelectd = newValueSelected!;
+                  su.serverValue = sul.ip(newValueSelected);
+                  print("new server :: ${ServerUrl.urlCI}");
+                });
+              },
+              icon: Icon(Icons.cable_rounded),
+              iconSize: 25,
+              iconEnabledColor: Colors.lightBlueAccent,
+              style: TextStyle(color: Colors.blueAccent),
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            SizedBox(width: 30,),
             IconButton(
               icon: Icon(Icons.logout, color: Colors.red),
               color: Colors.white,
