@@ -251,34 +251,43 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
                   style: TextStyle(fontSize: 25, color: Colors.white),
                 ),
                 onPressed: () async {
-                  checkingNetwork = true;
-                  if (mounted) setState(() {});
-                  var res = await checkIfConnectedToNetwork();
-                  checkingNetwork = false;
-                  if (mounted) setState(() {});
-                  if (res == 'error') {
-                    instantMsgModal(
-                        context,
-                        Icon(
-                          CupertinoIcons.exclamationmark_circle,
-                          color: Colors.red,
-                          size: 40,
-                        ),
-                        Text("${GlobalVariables.httpError}"));
-                  } else if (res == 'errornet') {
-                    instantMsgModal(
-                        context,
-                        Icon(
-                          CupertinoIcons.exclamationmark_circle,
-                          color: Colors.red,
-                          size: 40,
-                        ),
-                        Text("${GlobalVariables.httpError}"));
-                  } else {
-                    continueSync();
-                    // setState(() {
-                    //   btn_sync =true;
-                    // });
+                  if(btn_sync){
+                    btn_sync = false;
+                    checkingNetwork = true;
+                    if (mounted) setState(() {});
+                    var res = await checkConnection();
+                    checkingNetwork = false;
+                    if (mounted) setState(() {});
+                    if (res == 'error') {
+                      instantMsgModal(
+                          context,
+                          Icon(
+                            CupertinoIcons.exclamationmark_circle,
+                            color: Colors.red,
+                            size: 40,
+                          ),
+                          Text("${GlobalVariables.httpError}"));
+                      btn_sync = true;
+                    } else if (res == 'errornet') {
+                      instantMsgModal(
+                          context,
+                          Icon(
+                            CupertinoIcons.exclamationmark_circle,
+                            color: Colors.red,
+                            size: 40,
+                          ),
+                          Text("${GlobalVariables.httpError}"));
+                      btn_sync = true;
+                    } else {
+                      if (res == 'connected') {
+                        continueSync();
+                      }else{
+                        btn_sync = true;
+                      }
+                      // setState(() {
+                      //   btn_sync =true;
+                      // });
+                    }
                   }
                 },
               ),

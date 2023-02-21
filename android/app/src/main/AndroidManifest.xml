@@ -11,12 +11,9 @@
     <uses-feature android:name="android.permission.VIBRATE"/>
     <uses-feature android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.INTERNET" />
-   <application
-        android:label="PC-Alt_Snackbar"
-        android:name="${applicationName}"
-        android:usesCleartextTraffic="true"
-        android:icon="@mipmap/launcher_icon">
+   <application>
         <activity
+            android:label="Physical Count"
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

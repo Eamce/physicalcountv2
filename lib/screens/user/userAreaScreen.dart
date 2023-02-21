@@ -6,6 +6,7 @@ import 'package:physicalcountv2/screens/user/itemScanningScreen.dart';
 import 'package:physicalcountv2/screens/user/syncScannedItemScreen.dart';
 import 'package:physicalcountv2/screens/user/viewItemNotFoundScanScreen.dart';
 import 'package:physicalcountv2/screens/user/viewItemScannedListScreen.dart';
+import 'package:physicalcountv2/services/api.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/services/server_url.dart';
@@ -315,17 +316,30 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           //     prefss.getString(
                                           //             'saveAuditSignature') ??
                                           //         '';
-                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
-                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
-                                          GlobalVariables.currentDepartment   = data[index]['department'];
-                                          GlobalVariables.currentSection      = data[index]['section'];
-                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    SyncScannedItemScreen()),
-                                          );
+                                          var res = await checkConnection();
+                                          if (res == 'connected') {
+                                            GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                            GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                            GlobalVariables.currentDepartment   = data[index]['department'];
+                                            GlobalVariables.currentSection      = data[index]['section'];
+                                            GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      SyncScannedItemScreen()),
+                                            );
+                                          }else{
+                                            instantMsgModal(
+                                                context,
+                                                Icon(
+                                                  CupertinoIcons.exclamationmark_circle,
+                                                  color: Colors.red,
+                                                  size: 40,
+                                                ),
+                                                Text("No Connection. Please connect to a network."));
+                                          }
+
                                         },
                                         style: ElevatedButton.styleFrom(
                                             primary: Colors.green),
