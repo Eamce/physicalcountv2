@@ -336,7 +336,7 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                                 builder: (BuildContext context){
                                                   return CupertinoAlertDialog(
                                                     title: Text("${sul.server(ServerUrl.urlCI)} Server"),
-                                                    content: Text("Are you sure to Sync in this Server?"),
+                                                    content: Text("Continue to Sync in this Server?"),
                                                     actions: <Widget>[
                                                       TextButton(
                                                         child: Text("Yes"),

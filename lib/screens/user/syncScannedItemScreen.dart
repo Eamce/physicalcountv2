@@ -36,6 +36,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
   bool checkingNetwork = false;
   bool syncingStatus = false;
   bool btn_sync = false;
+  bool btn_close_click = true;
   late AnimationController animationController;
   Logs _log = Logs();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -45,6 +46,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     btn_sync = true;
+    btn_close_click = false;
     if (mounted) setState(() {});
     _getMyAudit();
     super.initState();
@@ -62,7 +64,40 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
           elevation: 0.0,
           leading: IconButton(
             icon: Icon(Icons.close, color: Colors.red),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if(!btn_sync){
+                btn_close_click = true;
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context){
+                      return CupertinoAlertDialog(
+                        title: Text("Syncing ongoing"),
+                        content: Text("Continue to Close?"),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Yes"),
+                            onPressed: (){
+                              btn_close_click = false;
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text("No"),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                              btn_close_click = false;
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                );
+              }else{
+                Navigator.of(context).pop();
+              }
+            }
           ),
           title: Row(
             children: [
@@ -394,6 +429,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   // Navigator.pop(context);
                 });
                 await _sqfliteDBHelper.updateTblAuditTrail();
+                if(btn_close_click){
+                  btn_close_click = false;
+                  Navigator.of(context).pop();
+                }
                 Navigator.of(context).pop();
                 instantMsgModal(
                     context,
@@ -460,6 +499,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   // Navigator.pop(context);
                 });
                 await _sqfliteDBHelper.updateTblAuditTrail();
+                if(btn_close_click){
+                  btn_close_click = false;
+                  Navigator.of(context).pop();
+                }
                 Navigator.of(context).pop();
                 instantMsgModal(
                     context,
@@ -553,6 +596,10 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   // Navigator.pop(context);
                 });
                 await _sqfliteDBHelper.updateTblAuditTrail();
+                if(btn_close_click){
+                  btn_close_click = false;
+                  Navigator.of(context).pop();
+                }
                 Navigator.of(context).pop();
                 instantMsgModal(
                     context,

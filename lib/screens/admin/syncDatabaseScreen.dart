@@ -6,6 +6,8 @@ import 'package:physicalcountv2/db/models/logsModel.dart';
 import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/screens/admin/syncDoneScreen.dart';
 import 'package:physicalcountv2/services/api.dart';
+import 'package:physicalcountv2/services/server_url.dart';
+import 'package:physicalcountv2/services/server_url_list.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 
@@ -16,6 +18,8 @@ class SyncDatabaseScreen extends StatefulWidget {
 
 class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
     with SingleTickerProviderStateMixin {
+  ServerUrl su = ServerUrl();
+  ServerUrlList sul = ServerUrlList();
   late AnimationController animationController;
   List tables = [
     {
@@ -64,10 +68,12 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
   List dunit = [];
   Logs _log = Logs();
   bool btn_sync = false;
+  bool btn_close_click = true;
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     btn_sync = true;
+    btn_close_click = false;
     if (mounted) setState(() {});
     animationController = new AnimationController(
       vsync: this,
@@ -95,7 +101,40 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
           elevation: 0.0,
           leading: IconButton(
             icon: Icon(Icons.close, color: Colors.red),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              if(!btn_sync){
+                btn_close_click = true;
+                showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context){
+                      return CupertinoAlertDialog(
+                        title: Text("Syncing ongoing"),
+                        content: Text("Continue to Close?"),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Yes"),
+                            onPressed: (){
+                              btn_close_click = false;
+                              Navigator.of(context).pop();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            child: Text("No"),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                              btn_close_click = false;
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                );
+              }else{
+                Navigator.of(context).pop();
+              }
+            }
           ),
           title: Padding(
             padding: const EdgeInsets.only(left: 8.0),
@@ -280,7 +319,47 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
                       btn_sync = true;
                     } else {
                       if (res == 'connected') {
-                        continueSync();
+                        showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context){
+                              return CupertinoAlertDialog(
+                                title: Text("${sul.server(ServerUrl.urlCI)} Server"),
+                                content: Text("Continue to Sync in this Server?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text("Yes"),
+                                    onPressed: ()async{
+                                      var res = await checkConnection();
+                                      if(res == 'connected'){
+                                        continueSync();
+                                        Navigator.of(context).pop();
+                                      }else{
+                                        Navigator.of(context).pop();
+                                        btn_sync = true;
+                                        instantMsgModal(
+                                            context,
+                                            Icon(
+                                              CupertinoIcons.exclamationmark_circle,
+                                              color: Colors.red,
+                                              size: 40,
+                                            ),
+                                            Text("${GlobalVariables.httpError}"));
+                                      }
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text("No"),
+                                    onPressed: (){
+                                      btn_sync = true;
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+
+                              );
+                            }
+                        );
                       }else{
                         btn_sync = true;
                       }
@@ -520,6 +599,10 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         tables[3]['selected'] == true ||
         tables[4]['selected'] == true ||
         tables[5]['selected'] == true) {
+      if(btn_close_click){
+        btn_close_click = false;
+        Navigator.of(context).pop();
+      }
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => SyncDoneScreen()),

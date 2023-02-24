@@ -129,7 +129,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             builder: (BuildContext context){
                               return CupertinoAlertDialog(
                                 title: Text("Switching Server"),
-                                content: Text("Are you sure to Switch a new Server?"),
+                                content: Text("Continue to Switch a new Server?"),
                                 actions: <Widget>[
                                   TextButton(
                                     child: Text("Yes"),
