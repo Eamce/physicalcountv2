@@ -4,8 +4,11 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:physicalcountv2/auth/loginScreen.dart';
+import 'package:physicalcountv2/services/server_url.dart';
+import 'package:physicalcountv2/services/server_url_list.dart';
 import 'package:physicalcountv2/values/assets.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(PhysicalCount());
@@ -36,17 +39,30 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+  ServerUrlList sul = ServerUrlList();
   String deviceName = '';
   String deviceVersion = '';
   String identifier = '';
 
   void initState() {
+    checkSelectedServer();
     GlobalVariables.bodyContext = context;
     Timer(Duration(seconds: 2), () {
       _deviceDetails();
       gotoLogin();
     });
     super.initState();
+  }
+
+  checkSelectedServer()async{
+    ServerUrl su = ServerUrl();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.getString('new_server');
+    String value = prefs.getString('new_server') ?? ''.toString();
+    if(value.isNotEmpty){
+      su.serverValue = sul.ip(value);
+    }
+    print("Server :: ${su.serverValue}");
   }
 
   @override

@@ -751,7 +751,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
 
   _refreshItemList() async {
     List<ItemCount> x = await _sqfliteDBHelper.fetchItemCountWhere(
-        "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND exported != 'EXPORTED'");
+        "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND location_id = '${GlobalVariables.currentLocationID}' AND exported != 'EXPORTED'");
     _items = x;
     _notSynced = [];
     _synced = [];

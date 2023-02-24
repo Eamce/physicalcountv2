@@ -7,6 +7,7 @@ import 'package:physicalcountv2/screens/user/syncScannedItemScreen.dart';
 import 'package:physicalcountv2/screens/user/viewItemNotFoundScanScreen.dart';
 import 'package:physicalcountv2/screens/user/viewItemScannedListScreen.dart';
 import 'package:physicalcountv2/services/api.dart';
+import 'package:physicalcountv2/services/server_url_list.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 import 'package:physicalcountv2/services/server_url.dart';
@@ -20,6 +21,7 @@ class UserAreaScreen extends StatefulWidget {
 }
 
 class _UserAreaScreenState extends State<UserAreaScreen> {
+  ServerUrlList sul = ServerUrlList();
   late SqfliteDBHelper _sqfliteDBHelper;
   // Logs _log = Logs();
   // DateFormat dateFormat = DateFormat("yyyy-MM-dd");
@@ -44,26 +46,36 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Row(
+           mainAxisAlignment: MainAxisAlignment.center,
+           mainAxisSize: MainAxisSize.min,
            children: [
              Text(
-               "User Area       ",
-               style: TextStyle(color: Colors.blue),
-             ),
-
-             Text(
-               "Server: " + "${ServerUrl.urlCI}" ,
-
-               style: TextStyle(color: Colors.blue),
+               "Server: " + "${sul.server(ServerUrl.urlCI)}" ,
+               style: TextStyle(color: Colors.black),
              ),
            ],
           ),
           backgroundColor: Colors.transparent,
           titleSpacing: 0.0,
           elevation: 0.0,
-          leading: IconButton(
-            icon: Icon(Icons.close, color: Colors.red),
-            onPressed: () => Navigator.of(context).pop(),
+          leadingWidth: 150,
+          leading: Container(
+            child: Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close, color: Colors.red),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  Expanded(
+                    child: Text(
+                      "User Area",
+                      style: TextStyle(color: Colors.blue, fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ]
+            ),
           ),
           actions: [
             GlobalVariables.countType != 'ANNUAL'
@@ -318,16 +330,41 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           //         '';
                                           var res = await checkConnection();
                                           if (res == 'connected') {
-                                            GlobalVariables.currentLocationID   = data[index]['location_id'];
-                                            GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
-                                            GlobalVariables.currentDepartment   = data[index]['department'];
-                                            GlobalVariables.currentSection      = data[index]['section'];
-                                            GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      SyncScannedItemScreen()),
+                                            showDialog(
+                                                barrierDismissible: true,
+                                                context: context,
+                                                builder: (BuildContext context){
+                                                  return CupertinoAlertDialog(
+                                                    title: Text("${sul.server(ServerUrl.urlCI)} Server"),
+                                                    content: Text("Are you sure to Sync in this Server?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: Text("Yes"),
+                                                        onPressed: (){
+                                                          GlobalVariables.currentLocationID   = data[index]['location_id'];
+                                                          GlobalVariables.currentBusinessUnit = data[index]['business_unit'];
+                                                          GlobalVariables.currentDepartment   = data[index]['department'];
+                                                          GlobalVariables.currentSection      = data[index]['section'];
+                                                          GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                                          Navigator.of(context).pop();
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    SyncScannedItemScreen()),
+                                                          );
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        child: Text("No"),
+                                                        onPressed: (){
+                                                          Navigator.of(context).pop();
+                                                        },
+                                                      ),
+                                                    ],
+
+                                                  );
+                                                }
                                             );
                                           }else{
                                             instantMsgModal(

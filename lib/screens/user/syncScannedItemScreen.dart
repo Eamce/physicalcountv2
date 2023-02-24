@@ -315,6 +315,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
             size: 40,
           ),
           Text("${GlobalVariables.httpError}"));
+      btn_sync = true;
     } else if (res == 'errornet') {
       checkingNetwork = false;
       if (mounted) setState(() {});
@@ -326,6 +327,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
             size: 40,
           ),
           Text("${GlobalVariables.httpError}"));
+      btn_sync = true;
     }
     else {
       if(res == 'connected'){
@@ -349,6 +351,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   size: 40,
                 ),
                 Text("No data to sync."));
+            btn_sync = true;
           }
           else  {
             if (_nfitems.length > 0) {
@@ -418,6 +421,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   size: 40,
                 ),
                 Text("No data to sync."));
+            btn_sync = true;
           }else{
             if (_nfitems.length > 0) {
               var res = await syncNfItem(_nfitems,bytesUser,bytesAudit);
@@ -477,11 +481,12 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                     ),
                     Text("Something went wrong.")
                 );
+                btn_sync = true;
               }
             } else {
               checkingNetwork = false;
               if (mounted) setState(() {
-                Navigator.pop(context);
+                //Navigator.pop(context);
               });
               instantMsgModal(
                   context,
@@ -491,6 +496,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                     size: 40,
                   ),
                   Text("No data to sync."));
+              btn_sync =true;
             }
           }
 
@@ -508,6 +514,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                   size: 40,
                 ),
                 Text("No data to sync."));
+            btn_sync = true;
           }else{
             if (_nfitems.length > 0) {
               var res = await syncNfItem_freegoods(_nfitems,bytesUser,bytesAudit);
@@ -567,11 +574,12 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                     ),
                     Text("Something went wrong.")
                 );
+                btn_sync = true;
               }
             } else {
               checkingNetwork = false;
               if (mounted) setState(() {
-                Navigator.pop(context);
+                //Navigator.pop(context);
               });
               instantMsgModal(
                   context,
@@ -581,6 +589,7 @@ class _SyncScannedItemScreenState extends State<SyncScannedItemScreen> with Sing
                     size: 40,
                   ),
                   Text("No data to sync."));
+              btn_sync = true;
             }
           }
         }

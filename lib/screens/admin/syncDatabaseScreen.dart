@@ -43,7 +43,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       'selected': true
     },
     {'tbName': 'Filters', 'status': '', 'truncate': true, 'selected': true},
-    {'tbName': 'Item Count', 'status': '', 'truncate': true, 'selected': true}
+    {'tbName': 'Item Count', 'status': '', 'truncate': false, 'selected': true}
   ];
 
   NumberFormat nF = NumberFormat("###,###", "en_US");
@@ -501,15 +501,14 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       if (tables[5]['truncate'] == true) {
         tables[5]['status'] = "queue";
         if (mounted) setState(() {});
-        await _sqfliteDBHelper.deleteItemCountAll();
+        //await _sqfliteDBHelper.deleteItemCountAll();
         tables[5]['status'] = "done";
         if (mounted) setState(() {});
-        _log.date = dateFormat.format(DateTime.now());
-        _log.time = timeFormat.format(DateTime.now());
-        _log.device =
-            "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.date   = dateFormat.format(DateTime.now());
+        _log.time   = timeFormat.format(DateTime.now());
+        _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+        _log.user   = "ADMIN";
+        _log.empid  = "ADMIN";
         _log.details = "[SYNC][Item Count Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -534,6 +533,7 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
             size: 40,
           ),
           Text("No masterfile to sync"));
+      btn_sync = true;
     }
   }
 }

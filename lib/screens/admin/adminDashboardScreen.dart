@@ -21,6 +21,13 @@ class AdminDashboardScreen extends StatefulWidget {
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
+  final List<String> items = [
+    'Item1',
+    'Item2',
+    'Item3',
+    'Item4',
+  ];
+  String? selectedValue;
   //late Servers servers;
   ServerUrlList sul = ServerUrlList();
   var server = ServerUrlList().serverUrlKey();
@@ -46,6 +53,37 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     super.initState();
   }
 
+  checkSelectedServer()async{
+    ServerUrl su = ServerUrl();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.getString('new_server');
+    String value = prefs.getString('new_server') ?? ''.toString();
+    if(value.isEmpty){
+      serverName.removeAt(0);
+      this._currentItemSelectd = serverName[0];
+    }else{
+      serverName.removeAt(0);
+      this._currentItemSelectd = prefs.getString('new_server').toString();
+      print('NEW SERVER : ${prefs.getString('new_server').toString()}');
+      su.serverValue = sul.ip(value);
+    }
+
+    /*this._currentItemSelectd = prefs.getString('new_server').toString();
+    print('NEW SERVER : ${prefs.getString('new_server').toString()}');*/
+
+
+  }
+
+  void serverLog(String fServer)async{
+    _log.date = dateFormat.format(DateTime.now());
+    _log.time = timeFormat.format(DateTime.now());
+    _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+    _log.user = "ADMIN";
+    _log.empid = "ADMIN";
+    _log.details = "[SERVER][$fServer Change to $_currentItemSelectd]";
+    await _sqfliteDBHelper.insertLog(_log);
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -65,49 +103,83 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ),
           ),
           actions: <Widget>[
-            Text("Select Server :    ",
-              style: TextStyle(
-                color: Colors.black,
-                height: 2,
-                fontSize: 18,
-              ),
-            ),
-            DropdownButton(
-              value: _currentItemSelectd,
-              items: serverName.map((String dropDownStringItem){
-                return DropdownMenuItem(
-                  value: dropDownStringItem,
-                  child: Text(dropDownStringItem),
-                );
-              }).toList(),
-              onChanged: (String? newValueSelected) async{
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                ServerUrl su = ServerUrl();
-                ServerUrlList sul = ServerUrlList();
-                print("previous server :: ${su.serverValue}");
-                // _onDropDownItemSelected(newValueSelected);
-                setState(() {
-                  prefs.setString("new_server", newValueSelected.toString().trim());
-                  this._currentItemSelectd = newValueSelected!;
-                  // su.serverValue = sul.ip(newValueSelected);
-                  new_server = prefs.getString('new_server').toString();
-                  su.serverValue = sul.ip(new_server);
-                  print("new server :: ${ServerUrl.urlCI}");
-                });
-              },
-              icon: Icon(Icons.cable_rounded),
-              iconSize: 25,
-              iconEnabledColor: Colors.lightBlueAccent,
-              style: TextStyle(color: Colors.blueAccent),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            SizedBox(width: 30,),
-            IconButton(
-              icon: Icon(Icons.logout, color: Colors.red),
-              color: Colors.white,
-              onPressed: () {
-                logOut();
-              },
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("Select Server :    ",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                ),
+                DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                    value: _currentItemSelectd,
+                    items: serverName.map((String dropDownStringItem){
+                      return DropdownMenuItem(
+                        value: dropDownStringItem,
+                        child: Text(dropDownStringItem),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValueSelected) async{
+                      if(newValueSelected != _currentItemSelectd){
+                        showDialog(
+                            barrierDismissible: true,
+                            context: context,
+                            builder: (BuildContext context){
+                              return CupertinoAlertDialog(
+                                title: Text("Switching Server"),
+                                content: Text("Are you sure to Switch a new Server?"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text("Yes"),
+                                    onPressed: ()async{
+                                      var fServer = _currentItemSelectd;
+                                      SharedPreferences prefs = await SharedPreferences.getInstance();
+                                      ServerUrl su = ServerUrl();
+                                      ServerUrlList sul = ServerUrlList();
+                                      print("previous server :: ${su.serverValue}");
+                                      // _onDropDownItemSelected(newValueSelected);
+                                      setState(() {
+                                        prefs.setString("new_server", newValueSelected.toString().trim());
+                                        this._currentItemSelectd = newValueSelected!;
+                                        // su.serverValue = sul.ip(newValueSelected);
+                                        new_server = prefs.getString('new_server').toString();
+                                        su.serverValue = sul.ip(new_server);
+                                        print("new server :: ${ServerUrl.urlCI}");
+                                      });
+                                      serverLog(fServer);
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text("No"),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            }
+                        );
+                      }
+                    },
+                    icon: Icon(Icons.cable_rounded),
+                    iconSize: 25,
+                    iconEnabledColor: Colors.lightBlueAccent,
+                    style: TextStyle(color: Colors.blueAccent),
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                  ),
+                ),
+                SizedBox(width: 30,),
+                IconButton(
+                  icon: Icon(Icons.logout, color: Colors.red),
+                  color: Colors.white,
+                  onPressed: () {
+                    logOut();
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -218,11 +290,5 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ),
           (Route route) => false);
     });
-  }
-  checkSelectedServer()async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.getString('new_server');
-    this._currentItemSelectd = prefs.getString('new_server').toString();
-    print('NEW SERVER : ${prefs.getString('new_server').toString()}');
   }
 }

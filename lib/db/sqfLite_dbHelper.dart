@@ -366,17 +366,17 @@ class SqfliteDBHelper {
     // print(client.rawQuery(
     //     "SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' ",
     //     null));
-     return client.rawQuery("SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' ", null);
+     return client.rawQuery("SELECT * FROM itemsCount WHERE barcode LIKE '%$text%' AND exported = '' AND empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND location_id = '${GlobalVariables.currentLocationID}'", null);
   }
 
   Future searchNfItems(value)async{
     var client = await database;
-    return client.rawQuery("SELECT * FROM itemnotfound WHERE barcode LIKE '%$value%' AND exported = 'false' ", null);
+    return client.rawQuery("SELECT * FROM itemnotfound WHERE barcode LIKE '%$value%' AND exported = 'false' AND empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND location = '${GlobalVariables.currentLocationID}'", null);
   }
 
   Future searchNFItemsbyItemCode(value)async{
     var client = await database;
-    return client.rawQuery("SELECT * FROM itemnotfound WHERE itemcode LIKE '%$value%' AND exported ='' ",null);
+    return client.rawQuery("SELECT * FROM itemnotfound WHERE itemcode LIKE '%$value%' AND exported ='' AND empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${GlobalVariables.currentBusinessUnit}' AND department = '${GlobalVariables.currentDepartment}' AND section  = '${GlobalVariables.currentSection}' AND rack_desc  = '${GlobalVariables.currentRackDesc}' AND location = '${GlobalVariables.currentLocationID}'",null);
   }
 
   Future validateBarcode(barcode)async{
@@ -527,10 +527,10 @@ class SqfliteDBHelper {
 //-----------------ITEM NOT FOUND-------------------//
 
 //-----------------ITEMCOUNT-----------------//
-  Future<int> deleteItemCountAll() async {
+  /*Future<int> deleteItemCountAll() async {
     Database db = await database;
     return await db.delete(ItemCount.tblItemCount);
-  }
+  }*/
 
 
   Future<int> insertItemCount(ItemCount itemCount) async {
