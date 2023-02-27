@@ -149,6 +149,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
               icon: Icon(CupertinoIcons.doc_plaintext),
               color: Colors.red,
               onPressed: () {
+                GlobalVariables.ableEditDelete = true;
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -160,6 +161,7 @@ class _ItemScanningScreenState extends State<ItemScanningScreen> {
               icon: Icon(CupertinoIcons.barcode_viewfinder),
               color: Colors.red,
               onPressed: () {
+                GlobalVariables.ableEditDelete = true;
                 Navigator.push(
                   context,
                   MaterialPageRoute(

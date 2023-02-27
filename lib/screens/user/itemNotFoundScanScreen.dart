@@ -31,9 +31,11 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
   bool _loading = true;
   bool _listStat = false;
+  bool ableEditDelete = false;
 
   @override
   void initState() {
+    ableEditDelete = GlobalVariables.ableEditDelete;
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
     getUnits();
@@ -232,6 +234,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                           ],
                                         ),
                                       ),
+                                      ableEditDelete ?
                                       Row(
                                         children: [
                                           Spacer(),
@@ -329,7 +332,8 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                             ),
                                           ),
                                         ],
-                                      ),
+                                      )
+                                      : SizedBox(),
                                       Row(
                                         children: [
                                           Spacer(),
@@ -447,6 +451,7 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                           ],
                                         ),
                                       ),
+                                      ableEditDelete ?
                                       Row(
                                         children: [
                                           Spacer(),
@@ -546,7 +551,8 @@ class _ItemNotFoundScanScreenState extends State<ItemNotFoundScanScreen> {
                                             ),
                                           ),
                                         ],
-                                      ),
+                                      )
+                                      : SizedBox(),
                                       Row(
                                         children: [
                                           Spacer(),

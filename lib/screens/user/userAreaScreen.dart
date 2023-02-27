@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:physicalcountv2/db/models/itemCountModel.dart';
 import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
+import 'package:physicalcountv2/screens/user/itemNotFoundScanScreen.dart';
+import 'package:physicalcountv2/screens/user/itemScannedListScreen.dart';
 import 'package:physicalcountv2/screens/user/itemScanningScreen.dart';
 import 'package:physicalcountv2/screens/user/syncScannedItemScreen.dart';
 import 'package:physicalcountv2/screens/user/viewItemNotFoundScanScreen.dart';
@@ -30,14 +33,30 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
   List _assignArea = [];
   bool checking = true;
   List countType = [];
-
+  bool checkingData = false;
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
-
+    checkingData = true;
     _refreshUserAssignAreaList();
+    //print("items count :: $_items");
     super.initState();
+  }
+
+  Future checkCountItemAssignArea(List assignArea)async{
+    var areaLen = assignArea.length;
+    for(int i = 0; i < areaLen; i++){
+      List<ItemCount> x = await _sqfliteDBHelper.fetchItemCountWhere(
+          "empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${assignArea[i]['business_unit']}' AND department = '${assignArea[i]['department']}' AND section  = '${assignArea[i]['section']}' AND rack_desc  = '${assignArea[i]['rack_desc']}' AND location_id = '${assignArea[i]['location_id']}'");
+      if(x.isNotEmpty){
+        await _lockUnlockLocation2(true, true, assignArea[i]['location_id'].toString()); /*print("empno = '${GlobalVariables.logEmpNo}' AND business_unit = '${assignArea[i]['business_unit']}' AND department = '${assignArea[i]['department']}' AND section  = '${assignArea[i]['section']}' AND rack_desc  = '${assignArea[i]['rack_desc']}' AND location_id = '${assignArea[i]['location_id']}'");*/
+      }
+      if(i == areaLen-1){
+        checkingData = false;
+        _refreshUserAssignAreaList();
+      }
+    }
   }
 
   @override
@@ -238,9 +257,11 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           GlobalVariables.currentDepartment   = data[index]['department'];
                                           GlobalVariables.currentSection      = data[index]['section'];
                                           GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                          GlobalVariables.ableEditDelete      = false;
                                           Navigator.push(context,
                                             MaterialPageRoute(builder: (context) =>
-                                                    ViewItemScannedListScreen()),
+                                                    //ViewItemScannedListScreen()),
+                                                    ItemScannedListScreen()),
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -262,9 +283,12 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
                                           GlobalVariables.currentDepartment   = data[index]['department'];
                                           GlobalVariables.currentSection      = data[index]['section'];
                                           GlobalVariables.currentRackDesc     = data[index]['rack_desc'];
+                                          GlobalVariables.ableEditDelete      = false;
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => ViewItemNotFoundScanScreen()),
+                                            MaterialPageRoute(builder: (context) =>
+                                                //ViewItemNotFoundScanScreen()),
+                                                ItemNotFoundScanScreen()),
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
@@ -413,6 +437,14 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
     _refreshUserAssignAreaList();
   }
 
+  Future _lockUnlockLocation2(bool value, bool done, String locID) async {
+    var user = await _sqfliteDBHelper.selectU(GlobalVariables.logEmpNo);
+    await _sqfliteDBHelper.updateUserAssignAreaWhere(
+      "locked = '" + value.toString() + "' , done = '" + done.toString() + "'",
+      "emp_no = '${user[0]['emp_no']}' AND location_id = '$locID'",
+    );
+  }
+
   _refreshUserAssignAreaList() async {
     _assignArea = [];
     _assignArea = await _sqfliteDBHelper.selectUserArea(GlobalVariables.logEmpNo);
@@ -423,14 +455,21 @@ class _UserAreaScreenState extends State<UserAreaScreen> {
     // // print(GlobalVariables.logEmpNo);
     // print(_loc);
     if (_assignArea.length > 0 && countType.length>0) {
-      checking = false;
+      //checking = false;
       if (mounted) setState(() {});
     } else {
       var user = int.parse(GlobalVariables.logEmpNo) * 1;
       _assignArea = await _sqfliteDBHelper.selectUserArea(user.toString());
       countType = await _sqfliteDBHelper.getCountTypeDate(user.toString());
-      checking = false;
+      //checking = false;
       if (mounted) setState(() {});
+    }
+    if(checkingData){
+      await checkCountItemAssignArea(_assignArea);
+    }
+    else{
+      checkingData = false;
+      this.checking = false;
     }
   }
 }

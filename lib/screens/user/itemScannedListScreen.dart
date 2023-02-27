@@ -30,9 +30,11 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
   DateFormat timeFormat = DateFormat("hh:mm:ss aaa");
   bool listStat = false;
   bool _loading = true;
+  bool ableEditDelete = false;
 
   @override
   void initState() {
+    ableEditDelete = GlobalVariables.ableEditDelete;
     _sqfliteDBHelper = SqfliteDBHelper.instance;
     if (mounted) setState(() {});
     _refreshItemList();
@@ -315,6 +317,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                 ],
                                               ),
                                             ),
+                                            ableEditDelete ?
                                             Row(
                                               children: [
                                                 Spacer(),
@@ -411,7 +414,8 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                   ),
                                                 ),
                                               ],
-                                            ),
+                                            )
+                                            : SizedBox(),
                                             Row(
                                               children: [
                                                 Spacer(),
@@ -593,6 +597,7 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                 ],
                                               ),
                                             ),
+                                            ableEditDelete ?
                                             Row(
                                               children: [
                                                 Spacer(),
@@ -685,7 +690,8 @@ class _ItemScannedListScreenState extends State<ItemScannedListScreen> {
                                                   ),
                                                 ),
                                               ],
-                                            ),
+                                            )
+                                            : SizedBox(),
                                             Row(
                                               children: [
                                                 Spacer(),

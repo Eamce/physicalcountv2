@@ -31,4 +31,5 @@ class GlobalVariables {
   static String searchItemBarcode   = '';
   static String editedQuantity      = '';
   static int editCount              = 0;
+  static bool ableEditDelete        = true;
 }
