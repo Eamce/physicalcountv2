@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:physicalcountv2/db/models/adminModel.dart';
 import 'package:physicalcountv2/db/models/auditModel.dart';
 import 'package:physicalcountv2/db/models/filterModel.dart';
 import 'package:physicalcountv2/db/models/itemCountModel.dart';
@@ -193,6 +194,20 @@ class SqfliteDBHelper {
     ''');
 //--ITEMCOUNT TABLE--//
 
+//--ADMIN TABLE--//
+    await db.execute('''
+      CREATE TABLE ${Admin.tblAdmin}(
+        ${Admin.colId} INTEGER PRIMARY KEY AUTOINCREMENT,
+        ${Admin.colAppId} TEXT NOT NULL,
+        ${Admin.colEmpId} TEXT NOT NULL,
+        ${Admin.colEmpNo} TEXT NOT NULL,
+        ${Admin.colEmpPin} TEXT NOT NULL,
+        ${Admin.colUsertype} TEXT NOT NULL,
+        ${Admin.colEmpName} TEXT NOT NULL
+      )
+    ''');
+//--ADMIN TABLE--//
+
   }
 
 //-----------------LOGS-----------------//
@@ -287,6 +302,40 @@ class SqfliteDBHelper {
     return db.rawQuery("UPDATE ${User.tblUser} SET $column WHERE $where");
   }
 //-----------------USERS-----------------//
+
+//-----------------ADMIN-----------------//
+  Future<int> deleteAdminAll() async {
+    Database db = await database;
+    return await db.delete(Admin.tblAdmin);
+  }
+
+  Future insertAdminBatch(items, int start, int end) async {
+    Database db = await database;
+    await db.transaction((txn1) async {
+      print("start $start end $end");
+      Batch batch = txn1.batch();
+      for (var i = start; i < end; i++) {
+        batch.insert(Admin.tblAdmin, items[i]);
+      }
+      await batch.commit();
+      print("done $start end $end");
+    });
+  }
+
+  Future<List> selectAdminWhere(String empno, String emppin) async {
+    var db = await database;
+    List x = await db.rawQuery(
+        "SELECT * FROM ${Admin.tblAdmin} WHERE emp_no='$empno' AND emp_pin='$emppin'");
+    if (x.length > 0) {
+      return db.rawQuery(
+          "SELECT * FROM ${Admin.tblAdmin} WHERE emp_no ='$empno' AND emp_pin='$emppin'",null);
+    } else {
+      var user = int.parse(empno) * 1;
+      return db.rawQuery(
+          "SELECT * FROM ${Admin.tblAdmin} WHERE emp_no = '$user' AND emp_pin='$emppin'",null);
+    }
+  }
+//-----------------AMIN-----------------//
 
 //-----------------AUDIT-----------------//
   Future<int> deleteAuditAll() async {

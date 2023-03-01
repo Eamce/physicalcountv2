@@ -5,6 +5,7 @@ import 'package:physicalcountv2/db/sqfLite_dbHelper.dart';
 import 'package:physicalcountv2/db/models/logsModel.dart';
 import 'package:physicalcountv2/screens/admin/adminDashboardScreen.dart';
 import 'package:physicalcountv2/screens/user/userDashboardScreen.dart';
+import 'package:physicalcountv2/services/api.dart';
 import 'package:physicalcountv2/values/assets.dart';
 import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
@@ -18,6 +19,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  List adminMasterfileData = [];
+  var adminMasterfileCount = 0;
+  bool downloading = true;
+  bool syncBtn_click = true;
   late FocusNode myFocusNodeEmpNo;
   late FocusNode myFocusNodeEmpPin;
 
@@ -37,6 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     _sqfliteDBHelper = SqfliteDBHelper.instance;
+    downloading = false;
+    syncBtn_click = false;
     if (mounted) setState(() {});
     // emppinController.text="947670329361";
     // empnoController.text="1000043388";
@@ -50,6 +57,43 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  getAdminHere()async{
+    downloading = true;
+    await _sqfliteDBHelper.deleteAdminAll();
+    adminMasterfileData = await getAdmin('True', 'Admin');
+    await _sqfliteDBHelper.insertAdminBatch(adminMasterfileData, 0, adminMasterfileData.length);
+    adminMasterfileCount = adminMasterfileCount + adminMasterfileData.length;
+    _log.date = dateFormat.format(DateTime.now());
+    _log.time = timeFormat.format(DateTime.now());
+    _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+    _log.user = "USER";
+    _log.empid = "USER";
+    _log.details = "[SYNC][ADMIN Masterfile]";
+    await _sqfliteDBHelper.insertLog(_log);
+    downloading = false;
+    print("DATA :: ${adminMasterfileData.length}");
+    if(adminMasterfileData.length > 0){
+      syncBtn_click = false;
+      instantMsgModal(
+          context,
+          Icon(
+            CupertinoIcons.checkmark_alt_circle,
+            color: Colors.green,
+            size: 40,
+          ),
+          Text("Admin Masterfile successfully synced."));
+    }else{
+      syncBtn_click = false;
+      instantMsgModal(
+          context,
+          Icon(
+            CupertinoIcons.exclamationmark_circle,
+            color: Colors.red,
+            size: 40,
+          ),
+          Text("No Data Received"));
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -60,9 +104,70 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.transparent,
           titleSpacing: 0.0,
           elevation: 0.0,
-          title: Text(''),
+          leadingWidth: 8,
+          title: downloading ? LinearProgressIndicator() : SizedBox(),
           actions: <Widget>[
-
+            IconButton(
+              icon: Icon(Icons.sync_outlined, color: Colors.red),
+              color: Colors.white,
+              onPressed: () async{
+                if(!syncBtn_click){
+                  syncBtn_click = true;
+                  var res = await checkConnection();
+                  if(res == 'connected'){
+                    showDialog(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (BuildContext context){
+                          return CupertinoAlertDialog(
+                            title: Text("Syncing Admin Masterfile"),
+                            content: Text("Continue to Sync?"),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text("Yes"),
+                                onPressed: ()async{
+                                  var res = await checkConnection();
+                                  if(res == 'connected'){
+                                    Navigator.of(context).pop();
+                                    await getAdminHere();
+                                  }else{
+                                    instantMsgModal(
+                                        context,
+                                        Icon(
+                                          CupertinoIcons.exclamationmark_circle,
+                                          color: Colors.red,
+                                          size: 40,
+                                        ),
+                                        Text("${GlobalVariables.httpError}"));
+                                  }
+                                },
+                              ),
+                              TextButton(
+                                child: Text("No"),
+                                onPressed: (){
+                                  syncBtn_click = false;
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        }
+                    );
+                  }else{
+                    syncBtn_click = false;
+                    //Navigator.of(context).pop();
+                    instantMsgModal(
+                        context,
+                        Icon(
+                          CupertinoIcons.exclamationmark_circle,
+                          color: Colors.red,
+                          size: 40,
+                        ),
+                        Text("${GlobalVariables.httpError}"));
+                  }
+                }
+              },
+            ),
           ],
         ),
         body: Padding(
@@ -273,7 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await _sqfliteDBHelper.insertLog(_log);
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => AdminDashboardScreen()),
+          MaterialPageRoute(builder: (context) => AdminDashboardScreen(user: "ADMIN", id: "ADMIN")),
         );
       } else {
        // var rs = await _sqfliteDBHelper.fetchUsersWhere("id != 0");
@@ -310,15 +415,32 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
             MaterialPageRoute(builder: (context) => UserDashboardScreen()),
           );
-        } else {
-          instantMsgModal(
+        }
+        else {
+          var ls2 = await _sqfliteDBHelper.selectAdminWhere(empnoController.text.trim(), emppinController.text.trim());
+          if(ls2.isNotEmpty){
+            print("ADMIN :: $ls2");
+            _log.date     = dateFormat.format(DateTime.now());
+            _log.time     = timeFormat.format(DateTime.now());
+            _log.device   = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
+            _log.user     = "${ls2[0]['emp_name']}";
+            _log.empid    = "${empnoController.text}";
+            _log.details  = "[LOGIN][Admin Login]";
+            await _sqfliteDBHelper.insertLog(_log);
+            Navigator.push(
               context,
-              Icon(
-                CupertinoIcons.exclamationmark_circle,
-                color: Colors.red,
-                size: 40,
-              ),
-              Text("Invalid Credentials."));
+              MaterialPageRoute(builder: (context) => AdminDashboardScreen(user: "${ls2[0]['emp_name']}", id: "${empnoController.text}")),
+            );
+          }else{
+            instantMsgModal(
+                context,
+                Icon(
+                  CupertinoIcons.exclamationmark_circle,
+                  color: Colors.red,
+                  size: 40,
+                ),
+                Text("Invalid Credentials."));
+          }
         }
       }
     }

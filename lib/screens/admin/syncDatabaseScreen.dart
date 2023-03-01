@@ -12,6 +12,9 @@ import 'package:physicalcountv2/values/globalVariables.dart';
 import 'package:physicalcountv2/widget/instantMsgModal.dart';
 
 class SyncDatabaseScreen extends StatefulWidget {
+  final user;
+  final id;
+  const SyncDatabaseScreen({Key? key, required this.user, required this.id}) : super(key: key);
   @override
   _SyncDatabaseScreenState createState() => _SyncDatabaseScreenState();
 }
@@ -389,8 +392,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.date = dateFormat.format(DateTime.now());
         _log.time = timeFormat.format(DateTime.now());
         _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.user = "${widget.user}";
+        _log.empid = "${widget.id}";
         _log.details = "[SYNC][User Masterfile Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -408,8 +411,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[SYNC][User Masterfile]";
       await _sqfliteDBHelper.insertLog(_log);
     }
@@ -423,8 +426,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.time = timeFormat.format(DateTime.now());
         _log.device =
             "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.user = "${widget.user}";
+        _log.empid = "${widget.id}";
         _log.details = "[SYNC][Audit Masterfile Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -442,8 +445,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[SYNC][Audit Masterfile]";
       await _sqfliteDBHelper.insertLog(_log);
     }
@@ -457,8 +460,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.time = timeFormat.format(DateTime.now());
         _log.device =
             "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.user = "${widget.user}";
+        _log.empid = "${widget.id}";
         _log.details = "[SYNC][Location Masterfile Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -476,8 +479,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[SYNC][Location Masterfile]";
       await _sqfliteDBHelper.insertLog(_log);
     }
@@ -491,8 +494,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.time = timeFormat.format(DateTime.now());
         _log.device =
             "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.user = "${widget.user}";
+        _log.empid = "${widget.id}";
         _log.details = "[SYNC][Item Masterfile Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -524,8 +527,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[SYNC][Item Masterfile]";
       await _sqfliteDBHelper.insertLog(_log);
     }
@@ -539,8 +542,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.time = timeFormat.format(DateTime.now());
         _log.device =
             "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user = "ADMIN";
-        _log.empid = "ADMIN";
+        _log.user = "${widget.user}";
+        _log.empid = "${widget.id}";
         _log.details = "[SYNC][Filters Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }
@@ -568,8 +571,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[SYNC][Filters]";
       await _sqfliteDBHelper.insertLog(_log);
     }
@@ -586,8 +589,8 @@ class _SyncDatabaseScreenState extends State<SyncDatabaseScreen>
         _log.date   = dateFormat.format(DateTime.now());
         _log.time   = timeFormat.format(DateTime.now());
         _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-        _log.user   = "ADMIN";
-        _log.empid  = "ADMIN";
+        _log.user   = "${widget.user}";
+        _log.empid  = "${widget.id}";
         _log.details = "[SYNC][Item Count Truncate]";
         await _sqfliteDBHelper.insertLog(_log);
       }

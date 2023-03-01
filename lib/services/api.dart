@@ -83,6 +83,20 @@ Future checkConnection() async {
       return convertedDataToJson;
     }
 
+    //kulangan pa ni og filter sa syncing ra i butang sample getUnit
+    Future getAdmin(String haveFilter, String filters) async {
+      var url = Uri.parse(ServerUrl.urlCI + "mapi/getAdmin");
+      final response = await retry(
+             () => http.post(url, headers: {
+               "Accept": "Application/json"
+             }, body: {
+               'haveFilter': haveFilter,
+               'filters': filters,
+             }));
+      var convertedDataToJson = jsonDecode(response.body);
+      return convertedDataToJson;
+    }
+
     Future getAuditMasterfile() async {
       var url = Uri.parse(ServerUrl.urlCI + "mapi/getAuditMasterifle");
       final response = await retry(

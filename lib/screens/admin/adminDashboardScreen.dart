@@ -14,7 +14,9 @@ import 'package:physicalcountv2/widget/customLogicalModal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
-  const AdminDashboardScreen({Key? key}) : super(key: key);
+  final user;
+  final id;
+  const AdminDashboardScreen({Key? key, required this.user, required this.id}) : super(key: key);
   @override
   _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
 }
@@ -78,8 +80,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     _log.date = dateFormat.format(DateTime.now());
     _log.time = timeFormat.format(DateTime.now());
     _log.device = "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-    _log.user = "ADMIN";
-    _log.empid = "ADMIN";
+    _log.user = "${widget.user}";
+    _log.empid = "${widget.id}";
     _log.details = "[SERVER][$fServer Change to $_currentItemSelectd]";
     await _sqfliteDBHelper.insertLog(_log);
   }
@@ -193,7 +195,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => SyncDatabaseScreen()),
+                          builder: (context) => SyncDatabaseScreen(user: "${widget.user}", id: "${widget.id}")),
                     );
                   }),
                   Divider(),
@@ -280,8 +282,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       _log.time = timeFormat.format(DateTime.now());
       _log.device =
           "${GlobalVariables.deviceInfo}(${GlobalVariables.readdeviceInfo})";
-      _log.user = "ADMIN";
-      _log.empid = "ADMIN";
+      _log.user = "${widget.user}";
+      _log.empid = "${widget.id}";
       _log.details = "[LOGOUT][Admin Logout]";
       await _sqfliteDBHelper.insertLog(_log);
       Navigator.of(context).pushAndRemoveUntil(
